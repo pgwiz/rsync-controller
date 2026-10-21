@@ -1,0 +1,42 @@
+{
+  "activeTheme": "warm-handdrawn",
+  "cornerRadius": 8,
+  "shadowDepth": 2,
+  "preferredIndexer": "usn",
+  "networkTimeoutMs": 500,
+  "rsyncBinaryPath": "rsync",
+  "showHiddenFiles": false,
+  "shell": {
+    "menuTitle": "Rsync",
+    "position": "Default",
+    "showIcons": true,
+    "customIconPath": "E:\\Backup\\pgwiz\\rsync\\assets\\icon.ico",
+    "useSeparators": true,
+    "useAccelerators": true,
+    "submenuDepth": 1
+  },
+  "servers": [
+    {
+      "id": "alpha",
+      "name": "Alpha Server",
+      "host": "192.168.1.100",
+      "port": 22,
+      "user": "admin",
+      "keyPath": "",
+      "remotePath": "/data/backup"
+    }
+  ],
+  "customTheme": {
+    "name": "Custom Theme",
+    "canvasBg": "1a2332",
+    "surfaceBg": "c0c0c0",
+    "buttonBg": "d4d0c8",
+    "buttonText": "000000",
+    "accentColor": "0284c7",
+    "accentText": "ffffff",
+    "borderColor": "0f172a",
+    "textColor": "000000",
+    "cornerRadius": 8,
+    "shadowDepth": 2
+  }
+}

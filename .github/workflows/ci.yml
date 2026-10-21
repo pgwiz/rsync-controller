@@ -1,0 +1,39 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Run Unit Tests
+        run: go test -v ./...
+
+      - name: Build Executables
+        run: |
+          go build -ldflags "-H windowsgui" -o rsync-ui.exe ./cmd/rsync_ui
+          go build -o rs_copy.exe ./cmd/rs_copy
+          go build -o rsync-service.exe ./cmd/rsync_service
+
+      - name: Upload Binaries Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rsync-controller-windows
+          path: |
+            rsync-ui.exe
+            rs_copy.exe
+            rsync-service.exe
+            config.example.json
+            assets/icon.ico

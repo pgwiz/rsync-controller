@@ -1,0 +1,21 @@
+{
+  "themeId": "y2k-candy",
+  "themeName": "Y2K Cyber Candy",
+  "author": "Antigravity",
+  "style": {
+    "windowRadius": "14px",
+    "buttonRadius": "16px",
+    "border": "2px solid #1a1a2e",
+    "boxShadow": "4px 4px 0px #1a1a2e",
+    "titleBarGradient": "linear-gradient(180deg, #ff7eb3 0%, #ff758c 50%, #e03860 100%)",
+    "titleBarText": "#ffffff",
+    "canvasBackground": "#ffeef5",
+    "surfaceInset": "#ffffff",
+    "textColor": "#1a1a2e",
+    "accentColor": "#00f0ff",
+    "accentText": "#000000",
+    "activeButtonTransform": "translate(2px, 2px)",
+    "glossOverlay": true,
+    "fontFamily": "Segoe UI, -apple-system, sans-serif"
+  }
+}

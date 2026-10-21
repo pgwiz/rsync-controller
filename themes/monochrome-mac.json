@@ -1,0 +1,21 @@
+{
+  "themeId": "monochrome-mac",
+  "themeName": "Monochrome 1-Bit",
+  "author": "Antigravity",
+  "style": {
+    "windowRadius": "4px",
+    "buttonRadius": "3px",
+    "border": "2px solid #000000",
+    "boxShadow": "3px 3px 0px #000000",
+    "titleBarGradient": "repeating-linear-gradient(0deg, #000, #000 1px, #fff 1px, #fff 3px)",
+    "titleBarText": "#000000",
+    "canvasBackground": "#ffffff",
+    "surfaceInset": "#ffffff",
+    "textColor": "#000000",
+    "accentColor": "#000000",
+    "accentText": "#ffffff",
+    "activeButtonTransform": "translate(2px, 2px)",
+    "glossOverlay": false,
+    "fontFamily": "monospace"
+  }
+}

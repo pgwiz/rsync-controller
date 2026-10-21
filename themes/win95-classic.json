@@ -1,0 +1,21 @@
+{
+  "themeId": "win95-classic",
+  "themeName": "Windows 95 Classic",
+  "author": "Antigravity",
+  "style": {
+    "windowRadius": "0px",
+    "buttonRadius": "0px",
+    "border": "2px outset #ffffff",
+    "boxShadow": "none",
+    "titleBarGradient": "linear-gradient(90deg, #000080 0%, #1084d0 100%)",
+    "titleBarText": "#ffffff",
+    "canvasBackground": "#c0c0c0",
+    "surfaceInset": "#ffffff",
+    "textColor": "#000000",
+    "accentColor": "#000080",
+    "accentText": "#ffffff",
+    "activeButtonTransform": "translate(1px, 1px)",
+    "glossOverlay": false,
+    "fontFamily": "MS Sans Serif, Tahoma, sans-serif"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "themeId": "vaporwave-cyber",
+  "themeName": "Vaporwave Retrowave",
+  "author": "Antigravity",
+  "style": {
+    "windowRadius": "8px",
+    "buttonRadius": "10px",
+    "border": "2px solid #00f0ff",
+    "boxShadow": "4px 4px 0px #ff007f",
+    "titleBarGradient": "linear-gradient(90deg, #ff007f 0%, #7928ca 50%, #00f0ff 100%)",
+    "titleBarText": "#ffffff",
+    "canvasBackground": "#180928",
+    "surfaceInset": "#0d0417",
+    "textColor": "#00f0ff",
+    "accentColor": "#ff007f",
+    "accentText": "#ffffff",
+    "activeButtonTransform": "translate(2px, 2px)",
+    "glossOverlay": true,
+    "fontFamily": "Segoe UI, monospace, sans-serif"
+  }
+}

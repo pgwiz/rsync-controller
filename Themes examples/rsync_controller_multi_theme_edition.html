@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rsync Controller — Multi-Theme Edition (15 Themes)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tahoma:wght@400;700&family=Courier+New:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --corner-radius: 0px;
+            --btn-radius: 0px;
+        }
+
+        body {
+            font-family: Tahoma, sans-serif;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .retro-win { border-radius: var(--corner-radius) !important; }
+        .retro-btn, .aqua-btn { border-radius: var(--btn-radius) !important; }
+        .tab-btn { border-top-left-radius: var(--btn-radius) !important; border-top-right-radius: var(--btn-radius) !important; }
+
+        /* 1. Y2K Aqua & Win32 (Default) */
+        body.theme-aqua { background-color: #1a2332; color: #d1d5db; }
+        body.theme-aqua .retro-win { background-color: #c0c0c0; color: #000; border: 2px solid #dfdfdf; box-shadow: 4px 4px 15px rgba(0,0,0,0.6); }
+        body.theme-aqua .retro-titlebar { background: linear-gradient(90deg, #0a246a, #a6caf0); color: white; font-weight: bold; }
+        body.theme-aqua .retro-btn { background-color: #d4d0c8; border: 2px solid; border-color: #fff #808080 #808080 #fff; box-shadow: 1px 1px 0px #000; color: #000; }
+        body.theme-aqua .aqua-btn { background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%); border: 1px solid #0369a1; color: white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); font-weight: bold; }
+        body.theme-aqua .selection-highlight { background-color: #008080 !important; color: #ffffff !important; }
+
+        /* 2. Monochrome Classic 80s/90s GUI */
+        body.theme-mono { background-color: #0f172a; color: #f8fafc; }
+        body.theme-mono .retro-win { background-color: #ffffff; color: #0f172a; border: 3px solid #0f172a; box-shadow: 6px 6px 0px #0f172a; }
+        body.theme-mono .retro-titlebar { background: #0f172a; color: #ffffff; font-weight: bold; border-bottom: 2px solid #0f172a; }
+        body.theme-mono .retro-btn { background-color: #ffffff; border: 2px solid #0f172a; box-shadow: 2px 2px 0px #0f172a; color: #0f172a; font-weight: bold; }
+        body.theme-mono .aqua-btn { background: #0f172a; border: 2px solid #0f172a; color: #ffffff; font-weight: bold; box-shadow: 2px 2px 0px #64748b; }
+        body.theme-mono .selection-highlight { background-color: #0f172a !important; color: #ffffff !important; }
+
+        /* 3. Warm Handdrawn Retro PC */
+        body.theme-warm { background-color: #3b2f2f; color: #4a3525; }
+        body.theme-warm .retro-win { background-color: #fffaf0; color: #4a3525; border: 3px solid #4a3525; box-shadow: 6px 6px 0px #221914; }
+        body.theme-warm .retro-titlebar { background: #f59e0b; color: #221914; font-weight: bold; border-bottom: 2px solid #4a3525; }
+        body.theme-warm .retro-btn { background-color: #fef3c7; border: 2px solid #4a3525; box-shadow: 2px 2px 0px #4a3525; color: #4a3525; font-weight: bold; }
+        body.theme-warm .aqua-btn { background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border: 2px solid #4a3525; color: #ffffff; font-weight: bold; box-shadow: 2px 2px 0px #4a3525; }
+        body.theme-warm .selection-highlight { background-color: #f59e0b !important; color: #221914 !important; font-weight: bold; }
+
+        /* 4. Pastel Retro Grid */
+        body.theme-pastel { background-color: #2e1065; color: #312e81; }
+        body.theme-pastel .retro-win { background-color: #fef08a; color: #312e81; border: 3px solid #db2777; box-shadow: 6px 6px 0px rgba(219,39,119,0.5); }
+        body.theme-pastel .retro-titlebar { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: white; font-weight: bold; border-bottom: 2px solid #db2777; }
+        body.theme-pastel .retro-btn { background-color: #fbcfe8; border: 2px solid #db2777; box-shadow: 2px 2px 0px #db2777; color: #831843; font-weight: bold; }
+        body.theme-pastel .aqua-btn { background: linear-gradient(180deg, #38bdf8 0%, #ec4899 100%); border: 2px solid #db2777; color: white; font-weight: bold; box-shadow: 2px 2px 0px #9d174d; }
+        body.theme-pastel .selection-highlight { background-color: #ec4899 !important; color: #ffffff !important; }
+
+        /* 5. Nostalgic Media Popup UI */
+        body.theme-nostalgic { background-color: #172554; color: #1e3a8a; }
+        body.theme-nostalgic .retro-win { background-color: #fdf6e2; color: #1e3a8a; border: 3px solid #3b82f6; box-shadow: 6px 6px 0px #1d4ed8; }
+        body.theme-nostalgic .retro-titlebar { background: linear-gradient(90deg, #3b82f6, #60a5fa); color: white; font-weight: bold; border-bottom: 2px solid #1d4ed8; }
+        body.theme-nostalgic .retro-btn { background-color: #e0f2fe; border: 2px solid #3b82f6; box-shadow: 2px 2px 0px #1d4ed8; color: #1e3a8a; font-weight: bold; }
+        body.theme-nostalgic .aqua-btn { background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%); border: 2px solid #b45309; color: white; font-weight: bold; box-shadow: 2px 2px 0px #92400e; }
+        body.theme-nostalgic .selection-highlight { background-color: #3b82f6 !important; color: #ffffff !important; }
+
+        /* 6. Vaporwave OS & Player */
+        body.theme-vaporwave { background-color: #2e1065; color: #e879f9; }
+        body.theme-vaporwave .retro-win { background-color: #f3e8ff; color: #581c87; border: 3px solid #9333ea; box-shadow: 6px 6px 0px #3b0764; }
+        body.theme-vaporwave .retro-titlebar { background: linear-gradient(90deg, #9333ea, #c084fc); color: white; font-weight: bold; border-bottom: 2px solid #581c87; }
+        body.theme-vaporwave .retro-btn { background-color: #e9d5ff; border: 2px solid #9333ea; box-shadow: 2px 2px 0px #581c87; color: #581c87; font-weight: bold; }
+        body.theme-vaporwave .aqua-btn { background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 100%); border: 2px solid #0e7490; color: white; font-weight: bold; box-shadow: 2px 2px 0px #164e63; }
+        body.theme-vaporwave .selection-highlight { background-color: #06b6d4 !important; color: #ffffff !important; }
+
+        /* 7. Pink & Yellow Y2K Pop */
+        body.theme-y2kpink { background-color: #831843; color: #9f1239; }
+        body.theme-y2kpink .retro-win { background-color: #fef08a; color: #881337; border: 3px solid #ec4899; box-shadow: 6px 6px 0px #4c0519; }
+        body.theme-y2kpink .retro-titlebar { background: linear-gradient(90deg, #ec4899, #f43f5e); color: white; font-weight: bold; border-bottom: 2px solid #be123c; }
+        body.theme-y2kpink .retro-btn { background-color: #fce7f3; border: 2px solid #ec4899; box-shadow: 2px 2px 0px #be123c; color: #881337; font-weight: bold; }
+        body.theme-y2kpink .aqua-btn { background: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%); border: 2px solid #115e59; color: white; font-weight: bold; box-shadow: 2px 2px 0px #134e4a; }
+        body.theme-y2kpink .selection-highlight { background-color: #0d9488 !important; color: #ffffff !important; }
+
+        /* 8. Retrowave Vintage PC */
+        body.theme-retrowavepc { background-color: #110022; color: #ff77ff; }
+        body.theme-retrowavepc .retro-win { background-color: #220044; color: #00ffff; border: 3px solid #ff00ff; box-shadow: 6px 6px 0px #00ffff; }
+        body.theme-retrowavepc .retro-titlebar { background: linear-gradient(90deg, #ff00ff, #7000ff); color: #ffff00; font-weight: bold; border-bottom: 2px solid #00ffff; }
+        body.theme-retrowavepc .retro-btn { background-color: #330066; border: 2px solid #ff00ff; box-shadow: 2px 2px 0px #00ffff; color: #ffff00; font-weight: bold; }
+        body.theme-retrowavepc .aqua-btn { background: linear-gradient(180deg, #ff00ff 0%, #aa00aa 100%); border: 2px solid #00ffff; color: #ffffff; font-weight: bold; box-shadow: 2px 2px 0px #00ffff; }
+        body.theme-retrowavepc .selection-highlight { background-color: #ff00ff !important; color: #ffff00 !important; }
+
+        /* 9. Classic Win95/98 Figma UI */
+        body.theme-win95figma { background-color: #008080; color: #000000; }
+        body.theme-win95figma .retro-win { background-color: #c0c0c0; color: #000000; border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
+        body.theme-win95figma .retro-titlebar { background: linear-gradient(90deg, #000080, #1084d0); color: #ffffff; font-weight: bold; }
+        body.theme-win95figma .retro-btn { background-color: #c0c0c0; border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; box-shadow: 1px 1px 0px #000000; color: #000000; }
+        body.theme-win95figma .aqua-btn { background-color: #c0c0c0; border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; box-shadow: 1px 1px 0px #000000; color: #000080; font-weight: bold; }
+        body.theme-win95figma .selection-highlight { background-color: #000080 !important; color: #ffffff !important; }
+
+        /* 10. Y2K Classic Desktop Blue Folders */
+        body.theme-y2kblue { background-color: #1e293b; color: #93c5fd; }
+        body.theme-y2kblue .retro-win { background-color: #f8fafc; color: #0f172a; border: 3px solid #3b82f6; box-shadow: 6px 6px 0px #1d4ed8; }
+        body.theme-y2kblue .retro-titlebar { background: linear-gradient(90deg, #2563eb, #60a5fa); color: white; font-weight: bold; border-bottom: 2px solid #1d4ed8; }
+        body.theme-y2kblue .retro-btn { background-color: #e0f2fe; border: 2px solid #2563eb; box-shadow: 2px 2px 0px #1d4ed8; color: #1e3a8a; font-weight: bold; }
+        body.theme-y2kblue .aqua-btn { background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); border: 2px solid #1e40af; color: white; font-weight: bold; box-shadow: 2px 2px 0px #1e3a8a; }
+        body.theme-y2kblue .selection-highlight { background-color: #2563eb !important; color: #ffffff !important; }
+
+        /* 11. Vintage Pixel PC Screens */
+        body.theme-pixelpc { background-color: #881337; color: #fecdd3; }
+        body.theme-pixelpc .retro-win { background-color: #fffbeb; color: #451a03; border: 3px solid #dc2626; box-shadow: 6px 6px 0px #7f1d1d; }
+        body.theme-pixelpc .retro-titlebar { background: linear-gradient(90deg, #dc2626, #f87171); color: white; font-weight: bold; border-bottom: 2px solid #991b1b; }
+        body.theme-pixelpc .retro-btn { background-color: #fef3c7; border: 2px solid #dc2626; box-shadow: 2px 2px 0px #991b1b; color: #78350f; font-weight: bold; }
+        body.theme-pixelpc .aqua-btn { background: linear-gradient(180deg, #10b981 0%, #059669 100%); border: 2px solid #065f46; color: white; font-weight: bold; box-shadow: 2px 2px 0px #047857; }
+        body.theme-pixelpc .selection-highlight { background-color: #dc2626 !important; color: #ffffff !important; }
+
+        /* 12. Y2K Music Chat Desktop */
+        body.theme-musicchat { background-color: #d1a366; color: #5a3e1b; }
+        body.theme-musicchat .retro-win { background-color: #faebd7; color: #3a2510; border: 3px solid #ff7f50; box-shadow: 6px 6px 0px #8b4513; }
+        body.theme-musicchat .retro-titlebar { background: linear-gradient(90deg, #ff7f50, #da70d6); color: white; font-weight: bold; border-bottom: 2px solid #8b4513; }
+        body.theme-musicchat .retro-btn { background-color: #ffe4c4; border: 2px solid #ff7f50; box-shadow: 2px 2px 0px #8b4513; color: #5a3e1b; font-weight: bold; }
+        body.theme-musicchat .aqua-btn { background: linear-gradient(180deg, #da70d6 0%, #ba55d3 100%); border: 2px solid #8b008b; color: white; font-weight: bold; box-shadow: 2px 2px 0px #4b0082; }
+        body.theme-musicchat .selection-highlight { background-color: #ff7f50 !important; color: #ffffff !important; }
+
+        /* 13. Y2K Desktop Music Player & Clock */
+        body.theme-playerclock { background-color: #1e4620; color: #a3e4d7; }
+        body.theme-playerclock .retro-win { background-color: #f5fffa; color: #0b3823; border: 3px solid #2e8b57; box-shadow: 6px 6px 0px #0e3a1d; }
+        body.theme-playerclock .retro-titlebar { background: linear-gradient(90deg, #2e8b57, #3cb371); color: white; font-weight: bold; border-bottom: 2px solid #0e3a1d; }
+        body.theme-playerclock .retro-btn { background-color: #e0eee0; border: 2px solid #2e8b57; box-shadow: 2px 2px 0px #0e3a1d; color: #0b3823; font-weight: bold; }
+        body.theme-playerclock .aqua-btn { background: linear-gradient(180deg, #ffa500 0%, #ff8c00 100%); border: 2px solid #8b4500; color: white; font-weight: bold; box-shadow: 2px 2px 0px #5c2c16; }
+        body.theme-playerclock .selection-highlight { background-color: #2e8b57 !important; color: #ffffff !important; }
+
+        /* 14. Y2K System Error & Warning Dialogs (Green/Blue) */
+        body.theme-dialogb { background-color: #164e63; color: #bae6fd; }
+        body.theme-dialogb .retro-win { background-color: #f0fdf4; color: #065f46; border: 3px solid #0284c7; box-shadow: 6px 6px 0px #0369a1; }
+        body.theme-dialogb .retro-titlebar { background: linear-gradient(90deg, #0284c7, #38bdf8); color: white; font-weight: bold; border-bottom: 2px solid #0369a1; }
+        body.theme-dialogb .retro-btn { background-color: #e0f2fe; border: 2px solid #0284c7; box-shadow: 2px 2px 0px #0369a1; color: #0369a1; font-weight: bold; }
+        body.theme-dialogb .aqua-btn { background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%); border: 2px solid #075985; color: white; font-weight: bold; box-shadow: 2px 2px 0px #0c4a6e; }
+        body.theme-dialogb .selection-highlight { background-color: #0284c7 !important; color: #ffffff !important; }
+
+        /* 15. Y2K System Error & Warning Dialogs (Sunset/Pink) */
+        body.theme-dialoga { background-color: #701a75; color: #f5d0fe; }
+        body.theme-dialoga .retro-win { background-color: #fff1f2; color: #881337; border: 3px solid #db2777; box-shadow: 6px 6px 0px #9f1239; }
+        body.theme-dialoga .retro-titlebar { background: linear-gradient(90deg, #db2777, #f43f5e); color: white; font-weight: bold; border-bottom: 2px solid #9f1239; }
+        body.theme-dialoga .retro-btn { background-color: #fce7f3; border: 2px solid #db2777; box-shadow: 2px 2px 0px #9f1239; color: #881337; font-weight: bold; }
+        body.theme-dialoga .aqua-btn { background: linear-gradient(180deg, #ec4899 0%, #be185d 100%); border: 2px solid #831843; color: white; font-weight: bold; box-shadow: 2px 2px 0px #500724; }
+        body.theme-dialoga .selection-highlight { background-color: #db2777 !important; color: #ffffff !important; }
+
+        .mono-font { font-family: 'Courier New', Courier, monospace; }
+    </style>
+</head>
+<body class="theme-aqua h-screen w-screen flex flex-col overflow-hidden p-2">
+
+    <!-- Main Window Container captured by MockE -->
+    <div id="capture-area" class="flex-1 flex flex-col retro-win rounded-none overflow-hidden text-xs">
+        
+        <!-- Window Title Bar -->
+        <div class="retro-titlebar px-2 py-1 flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-2">
+                <span class="inline-block w-3 h-3 bg-current border border-white"></span>
+                <span id="win-title-text">Rsync Controller — Multi-Theme Edition (15 Themes)</span>
+            </div>
+            <div class="flex space-x-1">
+                <button class="px-2 bg-gray-300 text-black border border-white hover:bg-gray-400 font-bold">_</button>
+                <button class="px-2 bg-gray-300 text-black border border-white hover:bg-gray-400 font-bold">&#9633;</button>
+                <button class="px-2 bg-red-600 text-white border border-white hover:bg-red-700 font-bold">X</button>
+            </div>
+        </div>
+
+        <!-- Address Bar Row -->
+        <div class="bg-opacity-20 bg-gray-500 border-b border-gray-400 p-1.5 flex flex-wrap items-center gap-1.5">
+            <div class="flex space-x-1">
+                <button class="retro-btn px-2 py-1">&lt;</button>
+                <button class="retro-btn px-2 py-1">&gt;</button>
+                <button class="retro-btn px-2 py-1">&#94;l</button>
+            </div>
+            <div class="flex-1 flex items-center bg-white border border-gray-500 px-1 py-0.5">
+                <input type="text" id="path-input" value="C:\Users\pgwiz" class="w-full outline-none mono-font text-xs text-black bg-transparent">
+            </div>
+            <button class="retro-btn px-3 py-1">GO</button>
+            <button class="retro-btn px-3 py-1">BROWSE</button>
+            
+            <div class="h-5 w-px bg-gray-400 mx-1"></div>
+
+            <div class="flex items-center space-x-1.5 bg-white/80 border border-gray-400 px-2 py-0.5 rounded text-xs text-black">
+                <span class="font-bold">Radius:</span>
+                <input type="range" id="global-radius-slider" min="0" max="24" value="0" oninput="setGlobalRadius(this.value)" class="w-16 h-3 cursor-pointer">
+                <span id="radius-val" class="font-mono text-[11px] font-bold w-6 text-center">0px</span>
+            </div>
+            
+            <button onclick="toggleThemeModal()" class="aqua-btn px-3 py-1 rounded text-xs">THEME INFO & SWITCHER (15)</button>
+            <button onclick="exportAsPNG()" class="aqua-btn px-3 py-1 rounded text-xs bg-emerald-600 border-emerald-700 font-bold">MockE</button>
+            <button class="aqua-btn px-3 py-1 rounded text-xs">RESCAN</button>
+            <button class="aqua-btn px-3 py-1 rounded text-xs">OPTIONS</button>
+            <button class="aqua-btn px-3 py-1 rounded text-xs">HIDE</button>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="bg-pink-100 border-b border-pink-300 px-2 py-1 flex justify-between items-center text-pink-900 font-bold text-xs">
+            <span>ACTIVE: LOCAL COPY <span id="staged-count-banner">4</span> item(s) staged -&gt; Dest: (Not chosen - click Choose Dest)</span>
+            <button class="aqua-btn px-3 py-1 rounded text-xs animate-pulse">CHOOSE DEST COPY</button>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="bg-opacity-30 bg-gray-400 border-b border-gray-400 flex px-2 pt-1 space-x-1">
+            <div class="bg-cyan-600 text-white font-bold px-4 py-1 border-t border-x border-gray-600 rounded-t shadow-inner flex items-center space-x-1">
+                <span>Local Explorer</span>
+            </div>
+            <div onclick="switchTab(2)" class="px-4 py-1 border-t border-x border-gray-400 rounded-t hover:bg-gray-200 hover:text-black cursor-pointer">Universal Search</div>
+            <div onclick="switchTab(3)" class="px-4 py-1 border-t border-x border-gray-400 rounded-t hover:bg-gray-200 hover:text-black cursor-pointer">Remote Sync</div>
+            <div onclick="switchTab(4)" class="px-4 py-1 border-t border-x border-gray-400 rounded-t hover:bg-gray-200 hover:text-black cursor-pointer">Server Health</div>
+            <div onclick="switchTab(5)" class="px-4 py-1 border-t border-x border-gray-400 rounded-t hover:bg-gray-200 hover:text-black cursor-pointer">Transfer Log</div>
+            <div onclick="switchTab(6)" class="px-4 py-1 border-t border-x border-gray-400 rounded-t hover:bg-gray-200 hover:text-black cursor-pointer">Settings</div>
+        </div>
+
+        <!-- Filter & Control Panel Row -->
+        <div class="bg-opacity-20 bg-gray-300 border-b border-gray-400 p-1.5 flex items-center gap-2">
+            <span class="font-bold">Filter Folder:</span>
+            <input type="text" id="filter-input" oninput="filterFiles(this.value)" placeholder="Type to filter files..." class="flex-1 bg-white border border-gray-500 px-2 py-0.5 outline-none text-xs text-black">
+            <button class="retro-btn px-3 py-1">TREE ON</button>
+            <button class="retro-btn px-3 py-1">FOLDER VIEW</button>
+        </div>
+
+        <div class="flex-1 flex overflow-hidden bg-opacity-50 bg-white text-current">
+            
+            <!-- Left Column: Directory Tree -->
+            <div class="w-1/4 border-r border-gray-400 bg-white text-black overflow-y-auto p-2 text-xs mono-font select-none">
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Chrong</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Config.Msi</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5 font-bold">&#x25BE; PerfLogs</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; Admin</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; ProcLogs</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Program Files</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Program Files (x86)</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; ProgramData</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Recovery</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; SamFwTool</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; THERMAL Receipt Printer 4.X</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; TimeTables</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; UnlockTool</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5 font-bold">&#x25BE; Users</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; Default</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; Public</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; defaultuser100000</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; defaultuser100000.PGWIZ</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; defaultuser100001</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; guestAdmin</div>
+                <div class="pl-4 bg-cyan-200 text-black font-bold py-0.5">&#x251C;&#x2500;&#x2500; pgwiz</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; postgres</div>
+                <div class="pl-4 cursor-pointer hover:bg-gray-100 py-0.5">&#x251C;&#x2500;&#x2500; Userspgwrs</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; Windows</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; adb</div>
+                <div class="cursor-pointer hover:bg-gray-100 py-0.5">&#x25A2; grub2</div>
+            </div>
+
+            <!-- Middle Column: File List with Individual Item Selection -->
+            <div class="flex-1 border-r border-gray-400 bg-white text-black flex flex-col overflow-hidden">
+                <div class="bg-gray-300 border-b border-gray-400 flex font-bold text-xs py-1 px-2">
+                    <div class="w-1/2">File / Folder Name</div>
+                    <div class="w-1/2">Full / Relative Path</div>
+                </div>
+                <div id="file-list" class="flex-1 overflow-y-auto mono-font text-xs">
+                    <!-- Populated dynamically via script -->
+                </div>
+            </div>
+
+            <!-- Right Column: Staged Selection Summary -->
+            <div class="w-1/3 bg-gray-100 text-black flex flex-col border-l border-gray-400">
+                <div class="bg-gray-300 border-b border-gray-400 p-1 font-bold text-xs flex justify-between">
+                    <span>Staged Selection Summary</span>
+                </div>
+                <div class="p-1.5 text-xs bg-gray-200 border-b border-gray-300 font-semibold flex justify-between items-center">
+                    <span>Staged: <span id="staged-count-label">4</span> items</span>
+                    <span>(<span id="staged-size-label">13.3 KB</span>)</span>
+                </div>
+                <div class="flex-1 bg-white overflow-y-auto overflow-x-hidden">
+                    <table class="w-full text-xs mono-font border-collapse table-auto">
+                        <thead>
+                            <tr class="bg-gray-200 border-b text-left">
+                                <th class="p-1.5 w-auto">Item Name</th>
+                                <th class="p-1.5 w-16 text-right">Size</th>
+                                <th class="p-1.5 w-24">Directory</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staged-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-opacity-20 bg-gray-300 border-t border-gray-400 p-2 flex justify-between items-center">
+            <div class="flex space-x-2">
+                <button onclick="executeRsync()" class="aqua-btn px-4 py-1.5 rounded font-bold shadow">EXECUTE RSYNC</button>
+                <button onclick="dryRun()" class="retro-btn px-3 py-1.5">DRY RUN TEST</button>
+                <button onclick="checkAll()" class="retro-btn px-3 py-1.5">CHECK ALL</button>
+                <button onclick="uncheckAll()" class="retro-btn px-3 py-1.5">UNCHECK ALL</button>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="uncheckAll()" class="retro-btn px-3 py-1.5">UNSTAGE</button>
+                <button onclick="uncheckAll()" class="retro-btn px-3 py-1.5">CLEAR</button>
+                <button onclick="executeRsync()" class="aqua-btn px-5 py-1.5 rounded font-bold shadow">SYNC</button>
+            </div>
+        </div>
+
+        <!-- Bottom System Status -->
+        <div class="bg-opacity-30 bg-gray-300 border-t border-gray-400 px-2 py-0.5 flex justify-between text-[11px] font-bold">
+            <span>ENGINE: DIRECT FILESYSTEM CRAWLER | SERVICE: RUNNING</span>
+            <span>Staged: <span id="status-staged-count">4</span> (<span id="status-staged-size">13.3 KB</span>)</span>
+            <span>READY</span>
+        </div>
+
+    </div>
+
+    <!-- Theme Architecture & Switcher Modal -->
+    <div id="theme-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="retro-win w-[950px] max-h-[92vh] flex flex-col shadow-2xl">
+            <div class="retro-titlebar px-2 py-1 flex justify-between items-center text-sm">
+                <span>Theme Architecture & Reference Catalog (15 Themes & All Reference Images)</span>
+                <button onclick="toggleThemeModal()" class="px-2 bg-red-600 text-white font-bold hover:bg-red-700">X</button>
+            </div>
+            <div class="p-4 bg-gray-100 text-black flex-1 overflow-y-auto space-y-4 text-xs">
+                
+                <!-- Theme Switcher Controls -->
+                <div class="bg-blue-50 border border-blue-300 p-3 rounded">
+                    <h3 class="font-bold text-sm text-blue-900 mb-2">Live Theme Switcher (15 Themes Cataloged)</h3>
+                    <div class="grid grid-cols-5 gap-2">
+                        <button onclick="setTheme('aqua')" class="retro-btn px-2 py-1.5 bg-cyan-200">1. Y2K Aqua</button>
+                        <button onclick="setTheme('mono')" class="retro-btn px-2 py-1.5 bg-slate-200">2. Monochrome 80s</button>
+                        <button onclick="setTheme('warm')" class="retro-btn px-2 py-1.5 bg-amber-200">3. Warm Handdrawn</button>
+                        <button onclick="setTheme('pastel')" class="retro-btn px-2 py-1.5 bg-pink-200">4. Pastel Grid</button>
+                        <button onclick="setTheme('nostalgic')" class="retro-btn px-2 py-1.5 bg-blue-200">5. Nostalgic Media</button>
+                        <button onclick="setTheme('vaporwave')" class="retro-btn px-2 py-1.5 bg-purple-200">6. Vaporwave OS</button>
+                        <button onclick="setTheme('y2kpink')" class="retro-btn px-2 py-1.5 bg-rose-200">7. Pink/Yellow Y2K</button>
+                        <button onclick="setTheme('retrowavepc')" class="retro-btn px-2 py-1.5 bg-indigo-300">8. Retrowave PC</button>
+                        <button onclick="setTheme('win95figma')" class="retro-btn px-2 py-1.5 bg-teal-300">9. Win95/98 Figma</button>
+                        <button onclick="setTheme('y2kblue')" class="retro-btn px-2 py-1.5 bg-blue-300">10. Y2K Blue Folders</button>
+                        <button onclick="setTheme('pixelpc')" class="retro-btn px-2 py-1.5 bg-red-300">11. Vintage Pixel PC</button>
+                        <button onclick="setTheme('musicchat')" class="retro-btn px-2 py-1.5 bg-orange-200 font-bold">12. Music Chat Desktop</button>
+                        <button onclick="setTheme('playerclock')" class="retro-btn px-2 py-1.5 bg-emerald-200 font-bold">13. Player & Clock</button>
+                        <button onclick="setTheme('dialogb')" class="retro-btn px-2 py-1.5 bg-sky-200 font-bold">14. Dialogs (Green/Blue)</button>
+                        <button onclick="setTheme('dialoga')" class="retro-btn px-2 py-1.5 bg-fuchsia-200 font-bold">15. Dialogs (Sunset/Pink)</button>
+                    </div>
+                </div>
+
+                <!-- Live Corner Radius & Custom Theme Controller -->
+                <div class="bg-amber-50 border border-amber-300 p-3 rounded space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-sm text-amber-900">Custom Theme Corner Radius Controller</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-xs">Current Radius:</span>
+                            <span id="modal-radius-val" class="font-mono font-bold bg-white px-2 py-0.5 border border-amber-400 rounded text-xs">0px</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-semibold">Slider:</span>
+                        <input type="range" id="modal-radius-slider" min="0" max="24" value="0" oninput="setGlobalRadius(this.value)" class="flex-1 cursor-pointer">
+                        <div class="flex space-x-1">
+                            <button onclick="setGlobalRadius(0)" class="retro-btn px-2 py-1 text-[11px]">0px Square</button>
+                            <button onclick="setGlobalRadius(4)" class="retro-btn px-2 py-1 text-[11px]">4px Subtle</button>
+                            <button onclick="setGlobalRadius(8)" class="retro-btn px-2 py-1 text-[11px]">8px Rounded</button>
+                            <button onclick="setGlobalRadius(14)" class="retro-btn px-2 py-1 text-[11px]">14px Pill</button>
+                        </div>
+                    </div>
+                    <div class="border-t border-amber-200 pt-2 flex flex-wrap items-center gap-3 text-xs">
+                        <span class="font-bold text-amber-900">Custom Colors:</span>
+                        <label class="flex items-center space-x-1">
+                            <span>Canvas:</span>
+                            <input type="color" id="custom-canvas" value="#1a2332" class="w-6 h-6 border cursor-pointer">
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <span>Window:</span>
+                            <input type="color" id="custom-win" value="#c0c0c0" class="w-6 h-6 border cursor-pointer">
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <span>Titlebar:</span>
+                            <input type="color" id="custom-title" value="#0a246a" class="w-6 h-6 border cursor-pointer">
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <span>Buttons:</span>
+                            <input type="color" id="custom-btn" value="#0284c7" class="w-6 h-6 border cursor-pointer">
+                        </label>
+                        <label class="flex items-center space-x-1">
+                            <span>Highlight:</span>
+                            <input type="color" id="custom-highlight" value="#008080" class="w-6 h-6 border cursor-pointer">
+                        </label>
+                        <button onclick="applyCustomTheme()" class="aqua-btn px-3 py-1 rounded text-xs font-bold">Apply Custom Palette</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-sm text-blue-900 border-b border-gray-400 pb-1 mb-2">Reference Image Library & Catalog (All Uploaded Assets)</h3>
+                    <p class="leading-relaxed mb-3">
+                        This mock design integrates design tokens, window framing, palette aesthetics, and icon styles from all provided user reference images.
+                    </p>
+                    
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">image_5d769d.png</span>
+                            <img src="image_5d769d.png" alt="Y2K Aqua" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/1a2332/ffffff?text=Y2K+Aqua'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K Aqua Glass Gradients</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-monochrome...</span>
+                            <img src="theme-monochrome-classic-80s-90s-gui.jpg" alt="Monochrome 80s" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/ffffff/000000?text=Monochrome+80s'">
+                            <span class="text-[9px] text-gray-500 mt-1">Classic 80s Monochrome GUI</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-handdrawn...</span>
+                            <img src="theme-handdrawn-retro-pc-windows.jpg" alt="Handdrawn Retro" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fef3c7/4a3525?text=Handdrawn+Retro'">
+                            <span class="text-[9px] text-gray-500 mt-1">Warm Handdrawn Windows</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-oldschool...</span>
+                            <img src="theme-oldschool-browser-assets-loading.jpg" alt="Oldschool Browser" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fef08a/db2777?text=Oldschool+Browser'">
+                            <span class="text-[9px] text-gray-500 mt-1">Pastel Retro Grid & Loading</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-nostalgic...</span>
+                            <img src="theme-nostalgic-browser-media-popup-ui.jpg" alt="Nostalgic Media" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fdf6e2/1e3a8a?text=Nostalgic+Media'">
+                            <span class="text-[9px] text-gray-500 mt-1">Nostalgic Browser Media Popup</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-retro-os...</span>
+                            <img src="theme-retro-os-folder-icons-media-player.jpg" alt="Retro OS Player" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/f3e8ff/581c87?text=Retro+OS+Player'">
+                            <span class="text-[9px] text-gray-500 mt-1">Retro OS Folder Icons & Player</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-pink-yellow...</span>
+                            <img src="theme-pink-yellow-y2k-window-elements.jpg" alt="Pink Yellow Y2K" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fef08a/881337?text=Pink+Yellow+Y2K'">
+                            <span class="text-[9px] text-gray-500 mt-1">Pink & Yellow Y2K Window Elements</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-vaporwave...</span>
+                            <img src="theme-vaporwave-retrowave-vintage-pc.jpg" alt="Retrowave PC" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/220044/ff00ff?text=Retrowave+PC'">
+                            <span class="text-[9px] text-gray-500 mt-1">Retrowave Vintage PC Monitor</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-ui-reference...</span>
+                            <img src="theme-ui-reference-window.jpg" alt="Win95 Figma" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/c0c0c0/000080?text=Win95+Figma+UI'">
+                            <span class="text-[9px] text-gray-500 mt-1">Classic Windows 95/98 Figma UI</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-y2k-classic...</span>
+                            <img src="theme-y2k-classic-desktop-blue-folders.jpg" alt="Y2K Blue Folders" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/f8fafc/2563eb?text=Y2K+Blue+Folders'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K Classic Desktop Blue Folders</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-vintage-pixel...</span>
+                            <img src="theme-vintage-pixel-pc-screens.jpg" alt="Vintage Pixel PC" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fffbeb/dc2626?text=Vintage+Pixel+PC+Screens'">
+                            <span class="text-[9px] text-gray-500 mt-1">Vintage Pixel PC Screens & Dialogs</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-y2k-music-chat...</span>
+                            <img src="theme-y2k-music-chat-desktop.jpg" alt="Music Chat Desktop" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/faebd7/ff7f50?text=Music+Chat+Desktop'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K Music Chat Desktop</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-y2k-desktop-music...</span>
+                            <img src="theme-y2k-desktop-music-player-clock.jpg" alt="Player & Clock" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/f5fffa/2e8b57?text=Music+Player+Clock'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K Desktop Music Player & Clock</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-y2k-system-error-b</span>
+                            <img src="theme-y2k-system-error-warning-dialogs-b.jpg" alt="Dialogs Green/Blue" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/f0fdf4/0284c7?text=Dialogs+Green+Blue'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K System Error (Green/Blue)</span>
+                        </div>
+                        <div class="border border-gray-400 p-2 bg-white flex flex-col items-center">
+                            <span class="font-bold mb-1 text-[11px] truncate w-full text-center">theme-y2k-system-error-a</span>
+                            <img src="theme-y2k-system-error-warning-dialogs-a.jpg" alt="Dialogs Sunset/Pink" class="w-full h-20 object-cover border border-gray-300" onerror="this.src='https://placehold.co/300x150/fff1f2/db2777?text=Dialogs+Sunset+Pink'">
+                            <span class="text-[9px] text-gray-500 mt-1">Y2K System Error (Sunset/Pink)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="toggleThemeModal()" class="retro-btn px-4 py-1.5 font-bold bg-gray-300">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mockFiles = [
+            { name: ".. (Parent Directory)", path: "..", size: "0", dir: "", staged: false },
+            { name: ".agentrouter", path: ".agentrouter", size: "4.1 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".agents", path: ".agents", size: "2.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".aider-desk", path: ".aider-desk", size: "12.5 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".android", path: ".android", size: "1.2 MB", dir: "E:\\Backup...", staged: false },
+            { name: ".antigravity-ide", path: ".antigravity-ide", size: "45.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".aws", path: ".aws", size: "3.4 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".azure", path: ".azure", size: "8.0 KB", dir: "E:\\Backup...", staged: true },
+            { name: ".azure-shell", path: ".azure-shell", size: "1.5 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".boto", path: ".boto", size: "512 B", dir: "E:\\Backup...", staged: false },
+            { name: ".bun", path: ".bun", size: "9.2 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".cache", path: ".cache", size: "5.1 MB", dir: "E:\\Backup...", staged: true },
+            { name: ".cagent", path: ".cagent", size: "3.2 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".cargo", path: ".cargo", size: "14.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".chelper", path: ".chelper", size: "1.1 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".chocolatey", path: ".chocolatey", size: "22.3 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".claude-mem", path: ".claude-mem", size: "88.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".claude.json", path: ".claude.json", size: "4.2 KB", dir: "E:\\Backup...", staged: true },
+            { name: ".claude.json.backup", path: ".claude.json.backup", size: "4.2 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".codeium", path: ".codeium", size: "18.4 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".codex", path: ".codex", size: "6.7 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".config", path: ".config", size: "12.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".cookiecutter_replay", path: ".cookiecutter_replay", size: "1.0 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".copilot", path: ".copilot", size: "15.3 KB", dir: "E:\\Backup...", staged: false },
+            { name: ".cursor", path: ".cursor", size: "31.0 KB", dir: "E:\\Backup...", staged: true },
+            { name: "FERMM", path: "FERMM", size: "DIR", dir: "E:\\Backup...", staged: true },
+            { name: "Themes examples", path: "Themes examples", size: "DIR", dir: "E:\\Backup...", staged: true },
+            { name: "changelog.md", path: "changelog.md", size: "13.3 KB", dir: "E:\\Backup...", staged: true },
+            { name: "core", path: "core", size: "DIR", dir: "E:\\Backup...", staged: true }
+        ];
+
+        let filterQuery = "";
+        let currentTheme = 'aqua';
+
+        function setGlobalRadius(val) {
+            document.documentElement.style.setProperty('--corner-radius', val + 'px');
+            document.documentElement.style.setProperty('--btn-radius', Math.max(0, val - 2) + 'px');
+            const radiusLabel = document.getElementById('radius-val');
+            if (radiusLabel) radiusLabel.innerText = val + 'px';
+            const slider = document.getElementById('global-radius-slider');
+            if (slider) slider.value = val;
+            const modalSlider = document.getElementById('modal-radius-slider');
+            if (modalSlider) modalSlider.value = val;
+            const modalVal = document.getElementById('modal-radius-val');
+            if (modalVal) modalVal.innerText = val + 'px';
+        }
+
+        function applyCustomTheme() {
+            const canvasBg = document.getElementById('custom-canvas').value;
+            const winBg = document.getElementById('custom-win').value;
+            const titleColor = document.getElementById('custom-title').value;
+            const btnColor = document.getElementById('custom-btn').value;
+            const highlightColor = document.getElementById('custom-highlight').value;
+
+            document.body.className = 'theme-custom h-screen w-screen flex flex-col overflow-hidden p-2';
+            document.body.style.backgroundColor = canvasBg;
+
+            const winEl = document.querySelector('.retro-win');
+            if (winEl) winEl.style.backgroundColor = winBg;
+
+            const titleBar = document.querySelector('.retro-titlebar');
+            if (titleBar) titleBar.style.background = titleColor;
+
+            document.querySelectorAll('.aqua-btn').forEach(btn => {
+                btn.style.background = btnColor;
+            });
+
+            document.getElementById('win-title-text').innerText = 'Rsync Controller — Custom Theme Edition';
+            renderApp();
+        }
+
+        function setTheme(themeName) {
+            currentTheme = themeName;
+            document.body.className = `theme-${themeName} h-screen w-screen flex flex-col overflow-hidden p-2`;
+            const titles = {
+                'aqua': 'Rsync Controller — Y2K Aqua Edition',
+                'mono': 'Rsync Controller — Monochrome Classic 80s/90s GUI',
+                'warm': 'Rsync Controller — Warm Handdrawn Retro PC Theme',
+                'pastel': 'Rsync Controller — Pastel Retro Grid Edition',
+                'nostalgic': 'Rsync Controller — Nostalgic Media Popup Edition',
+                'vaporwave': 'Rsync Controller — Vaporwave OS & Player Edition',
+                'y2kpink': 'Rsync Controller — Pink & Yellow Y2K Edition',
+                'retrowavepc': 'Rsync Controller — Retrowave Vintage PC Edition',
+                'win95figma': 'Rsync Controller — Classic Win95/98 Figma UI Edition',
+                'y2kblue': 'Rsync Controller — Y2K Classic Desktop Blue Folders Edition',
+                'pixelpc': 'Rsync Controller — Vintage Pixel PC Screens Edition',
+                'musicchat': 'Rsync Controller — Y2K Music Chat Desktop Edition',
+                'playerclock': 'Rsync Controller — Y2K Desktop Music Player & Clock Edition',
+                'dialogb': 'Rsync Controller — Y2K System Error & Warning Dialogs (Green/Blue)',
+                'dialoga': 'Rsync Controller — Y2K System Error & Warning Dialogs (Sunset/Pink)'
+            };
+            document.getElementById('win-title-text').innerText = titles[themeName];
+            renderApp();
+        }
+
+        function renderApp() {
+            const fileListEl = document.getElementById('file-list');
+            fileListEl.innerHTML = '';
+
+            const filteredFiles = mockFiles.filter(f => f.name.toLowerCase().includes(filterQuery.toLowerCase()) || f.path.toLowerCase().includes(filterQuery.toLowerCase()));
+
+            filteredFiles.forEach((file) => {
+                const row = document.createElement('div');
+                row.className = `flex px-2 py-1 cursor-pointer border-b border-gray-100 hover:bg-opacity-80 hover:bg-cyan-100 ${file.staged ? 'selection-highlight' : 'bg-white text-black'}`;
+                
+                row.innerHTML = `
+                    <div class="w-1/2 flex items-center space-x-2">
+                        <span class="w-3 h-3 border border-gray-400 inline-block shrink-0 ${file.staged ? 'bg-white' : 'bg-transparent'}"></span>
+                        <span class="truncate" title="${file.name}">${file.name}</span>
+                    </div>
+                    <div class="w-1/2 truncate" title="${file.path}">${file.path}</div>
+                `;
+
+                row.addEventListener('click', () => {
+                    file.staged = !file.staged;
+                    renderApp();
+                });
+
+                fileListEl.appendChild(row);
+            });
+
+            const stagedTbody = document.getElementById('staged-tbody');
+            stagedTbody.innerHTML = '';
+
+            const stagedItems = mockFiles.filter(f => f.staged);
+            stagedItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-blue-50';
+                tr.innerHTML = `
+                    <td class="p-1.5 break-all font-medium" title="${item.name}">${item.name}</td>
+                    <td class="p-1.5 text-right whitespace-nowrap">${item.size}</td>
+                    <td class="p-1.5 truncate text-gray-600" title="${item.dir}\\${item.name}">${item.dir}</td>
+                `;
+                stagedTbody.appendChild(tr);
+            });
+
+            document.getElementById('staged-count-banner').innerText = stagedItems.length;
+            document.getElementById('staged-count-label').innerText = stagedItems.length;
+            document.getElementById('status-staged-count').innerText = stagedItems.length;
+        }
+
+        function filterFiles(val) {
+            filterQuery = val;
+            renderApp();
+        }
+
+        function checkAll() {
+            mockFiles.forEach(f => f.staged = true);
+            renderApp();
+        }
+
+        function uncheckAll() {
+            mockFiles.forEach(f => f.staged = false);
+            renderApp();
+        }
+
+        function toggleThemeModal() {
+            const modal = document.getElementById('theme-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function switchTab(tabNum) {
+            console.log("Switched to Tab " + tabNum);
+        }
+
+        function dryRun() {
+            console.log("Dry run initiated.");
+        }
+
+        function executeRsync() {
+            const stagedCount = mockFiles.filter(f => f.staged).length;
+            console.log("Executing Rsync transfer for " + stagedCount + " items.");
+        }
+
+        function exportAsPNG() {
+            const captureElement = document.getElementById('capture-area');
+            html2canvas(captureElement, { scale: 2, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `rsync-controller-${currentTheme}-theme.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Export failed:", err);
+            });
+        }
+
+        window.onload = () => {
+            renderApp();
+        };
+    </script>
+</body>
+</html>

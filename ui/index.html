@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rsync Controller</title>
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="stylesheet" href="styles/tactile.css">
+</head>
+<body class="gloss-enabled">
+  <div class="window-frame">
+    <!-- Titlebar -->
+    <div class="titlebar">
+      <div class="titlebar-title">
+        <img src="assets/icon.png" alt="rp" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px; border-radius: 3px; display: inline-block;">
+        <span>RSYNC CONTROLLER</span>
+        <span class="titlebar-badge" id="currentFolderBadge">E:\Backup\pgwiz\rsync</span>
+      </div>
+      <div class="window-controls">
+        <button class="tactile-btn" id="btnToggleSettings" style="padding: 2px 8px; font-size: 11px; margin-right: 8px;">[OPTIONS / SETTINGS v]</button>
+        <button class="win-btn" id="btnWinClose" title="Close" onclick="window.close()">X</button>
+      </div>
+    </div>
+
+    <!-- Hidden by Default: Settings & Theme Drawer Panel -->
+    <div id="settingsDrawer" style="display: none; background: var(--canvas-bg); border-bottom: var(--win-border); padding: 12px; max-height: 420px; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: var(--win-border); padding-bottom: 6px; margin-bottom: 12px;">
+        <span style="font-weight: 800; font-size: 12px;">SETTINGS, THEMES & EXPLORER MENU CUSTOMIZER</span>
+        <button class="tactile-btn" id="btnCloseSettings" style="padding: 2px 8px; font-size: 10px;">[CLOSE OPTIONS ^]</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+        <!-- Column 1: Context Menu Customization -->
+        <div style="display: flex; flex-direction: column; gap: 8px; border-right: var(--win-border); padding-right: 12px;">
+          <div style="font-weight: bold; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 3px;">
+            EXPLORER CONTEXT MENU
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Submenu Depth Mode</label>
+            <select id="shellDepthSelect" class="tactile-btn" style="width: 100%; text-align: left; font-size: 11px;">
+              <option value="1" selected>Mode 1: Flat Flyout (Recommended)</option>
+              <option value="2">Mode 2: Grouped Nested Submenus</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Menu Position</label>
+            <select id="shellPositionSelect" class="tactile-btn" style="width: 100%; text-align: left; font-size: 11px;">
+              <option value="Default" selected>Default Alphabetical</option>
+              <option value="Top">Pin to Top</option>
+              <option value="Bottom">Pin to Bottom</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Menu Title</label>
+            <input type="text" id="shellTitleInput" class="search-input" style="font-size: 11px; padding: 4px 8px;" value="Rsync">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px; margin-top: 2px;">
+            <label style="display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="checkShellIcons" checked> Show Menu Icons
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="checkShellSeparators" checked> Visual Dividers
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="checkShellAccelerators" checked> Keyboard Keys (&Copy, &Pull)
+            </label>
+          </div>
+
+          <button class="tactile-btn primary" id="btnApplyShell" style="font-size: 10px; margin-top: 6px;">[Apply Shell Settings]</button>
+        </div>
+
+        <!-- Column 2: Indexer & Server Config -->
+        <div style="display: flex; flex-direction: column; gap: 8px; border-right: var(--win-border); padding-right: 12px;">
+          <div style="font-weight: bold; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 3px;">
+            INDEXER & SYSTEM SERVICE
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Indexing Engine</label>
+            <select id="indexerSelect" class="tactile-btn" style="width: 100%; text-align: left; font-size: 11px;">
+              <option value="usn" selected>Engine 1: USN Journal (FSCTL_ENUM_USN_DATA)</option>
+              <option value="mft">Engine 2: Raw MFT Reader</option>
+              <option value="everything">Engine 3: Voidtools Everything SDK</option>
+              <option value="crawler">Engine 4: Direct Crawler (Fallback)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><span>Windows Background Service</span> <span id="svcStatusTag" style="font-family: monospace; font-size: 10px;">[CHECKING...]</span></div>
+            <button class="tactile-btn" id="btnInstallService" style="font-size: 10px; margin-top: 2px;">[Install & Start Service (UAC)]</button>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Remote Servers</label>
+            <div style="border: var(--win-border); background: var(--surface-inset); padding: 6px; border-radius: var(--btn-radius); font-size: 11px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div><b>Alpha Server</b> (192.168.1.100:22)</div>
+                <span class="status-badge" style="color: green; font-size: 9px;">[ONLINE]</span>
+              </div>
+            </div>
+            <button class="tactile-btn" style="align-self: flex-start; margin-top: 4px; font-size: 10px;">[+ Add Remote Server]</button>
+          </div>
+        </div>
+
+        <!-- Column 3: Visual Theme Customizer -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-weight: bold; font-size: 11px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 3px;">
+            TACTILE THEME
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Theme Preset</label>
+            <select id="themeSelect" class="tactile-btn" style="width: 100%; text-align: left; font-size: 11px;">
+              <option value="y2k-candy">Y2K Cyber Candy (Curved + Glossy)</option>
+              <option value="win95-classic">Windows 95 Classic (Beveled 3D)</option>
+              <option value="monochrome-mac">Monochrome 1-Bit (Retro Mac)</option>
+              <option value="vaporwave-cyber">Vaporwave Retrowave (Neon)</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <div class="control-group">
+              <div class="control-label"><span>Radius</span> <span id="valWinRadius">12px</span></div>
+              <input type="range" class="control-input-slider" id="sliderWinRadius" min="0" max="24" value="12">
+            </div>
+            <div class="control-group">
+              <div class="control-label"><span>Shadow</span> <span id="valShadow">4px</span></div>
+              <input type="range" class="control-input-slider" id="sliderShadow" min="0" max="10" value="4">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+            <label style="display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="checkGloss" checked> Gloss Layer
+            </label>
+            <div class="color-input-row">
+              <span style="font-size: 10px; font-weight: bold;">Accent:</span>
+              <input type="color" class="color-picker" id="colorAccent" value="#00f0ff">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 6px; margin-top: 4px;">
+            <button class="tactile-btn" id="btnExportTheme" style="font-size: 10px;">[Export Theme]</button>
+            <button class="tactile-btn" id="btnImportTheme" style="font-size: 10px;">[Import Theme]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Control Bar -->
+    <div class="control-bar">
+      <div class="action-row">
+        <span class="mode-badge" id="modeBadge">[MODE: COPY TO]</span>
+        <div class="dest-lock-container">
+          <div class="lock-pill locked" id="destLockPill">
+            <span id="lockStatusTag">[LOCKED]</span>
+            <span id="destPathText">Alpha Server: /data/backup</span>
+          </div>
+          <button class="tactile-btn" id="btnToggleLock">[UNLOCK]</button>
+          <button class="tactile-btn" id="btnNewFolder">[+ New Folder]</button>
+        </div>
+      </div>
+      <!-- Instant Search Filter -->
+      <div class="search-wrapper">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search cached records (instant in-memory filter, no re-scanning)..." autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Clean Navigation Tabs Strip (Operational Only) -->
+    <div class="tabs-strip">
+      <button class="tab-btn active" data-tab="tab-source">[Source Items]</button>
+      <button class="tab-btn" data-tab="tab-dest">[Destination Browser]</button>
+      <button class="tab-btn" data-tab="tab-search">[Search Results (<span id="searchHitCount">0</span>)]</button>
+      <button class="tab-btn" data-tab="tab-checked">[Checked Items (<span id="checkedCountTag">0</span>)]</button>
+    </div>
+
+    <!-- Tab View Panels -->
+    <div class="panels-container">
+      <!-- Tab 1: Source Items -->
+      <div class="tab-panel active" id="tab-source">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="col-check"><input type="checkbox" id="selectAllCheckbox"></th>
+              <th class="col-icon">TYPE</th>
+              <th>NAME</th>
+              <th class="col-size">SIZE</th>
+            </tr>
+          </thead>
+          <tbody id="sourceItemsBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab 2: Destination Browser -->
+      <div class="tab-panel" id="tab-dest">
+        <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="font-weight: bold; font-size: 12px;">TARGET VOLUMES & SERVERS:</div>
+          <div style="display: flex; gap: 8px;">
+            <button class="tactile-btn">[VOL C:\]</button>
+            <button class="tactile-btn">[VOL D:\]</button>
+            <button class="tactile-btn">[VOL E:\]</button>
+            <button class="tactile-btn primary">[SERVER: Alpha (192.168.1.100)]</button>
+          </div>
+          <div style="margin-top: 10px; border: var(--win-border); padding: 8px; background: var(--surface-inset); height: 260px; overflow-y: auto;" id="destTreeContainer">
+            <!-- Directory tree loaded lazily -->
+            <div style="font-family: monospace; font-size: 12px;">
+              <div>[DIR] /data/backup/</div>
+              <div style="padding-left: 20px;">[DIR] /data/backup/projects/</div>
+              <div style="padding-left: 20px;">[DIR] /data/backup/databases/</div>
+              <div style="padding-left: 20px;">[DIR] /data/backup/archives/</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Search Results -->
+      <div class="tab-panel" id="tab-search">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="col-check"></th>
+              <th class="col-icon">TYPE</th>
+              <th>NAME</th>
+              <th>FULL PATH</th>
+            </tr>
+          </thead>
+          <tbody id="searchItemsBody">
+            <tr><td colspan="4" style="text-align: center; padding: 20px; color: #888;">Type in search bar to see instant cached results without losing selections.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab 4: Checked Items Review -->
+      <div class="tab-panel" id="tab-checked">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="col-check"></th>
+              <th class="col-icon">TYPE</th>
+              <th>STAGED ITEM</th>
+              <th class="col-size">SIZE</th>
+            </tr>
+          </thead>
+          <tbody id="checkedItemsBody">
+            <tr><td colspan="4" style="text-align: center; padding: 20px; color: #888;">No items currently checked. Check items in Source or Search tab.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom Status Summary Bar -->
+    <div class="status-bar">
+      <div class="status-left">
+        <span id="selectedCountSummary">[x] 0 items selected (0 B)</span>
+        <span>|</span>
+        <span id="engineStatusBadge" class="status-badge">ENGINE: USN JOURNAL</span>
+        <span>|</span>
+        <span id="networkStatusBadge" class="status-badge">[ONLINE: Alpha Server]</span>
+      </div>
+      <div>
+        <button class="tactile-btn primary" id="btnStartSync">[START SYNC]</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
