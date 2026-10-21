@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -169,6 +170,9 @@ func TestRsyncWinDetection(t *testing.T) {
 }
 
 func TestRsyncExecutionLive(t *testing.T) {
+	if _, err := exec.LookPath("rsync"); err != nil {
+		t.Skip("skipping live rsync test: rsync binary not found in PATH")
+	}
 	tmpDest := filepath.Join(os.TempDir(), "rsync_test_dest")
 	_ = os.MkdirAll(tmpDest, 0755)
 	defer os.RemoveAll(tmpDest)
