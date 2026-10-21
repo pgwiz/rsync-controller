@@ -137,9 +137,9 @@ go run .\cmd\usn_bench\main.go E:
 
 ## Theme Customization & Community Packs
 
-1. Open the UI and navigate to the **[Theme Studio]** tab.
-2. Adjust sliders for **Window Radius**, **Button Radius**, **Drop Shadow**, **Gloss Specular Sheen**, and **Colors**.
-3. Click **`[Export Theme (.zip / JSON)]`** to download your custom theme.
+1. Open the UI and navigate to the **Theme Studio** tab or click `THEME: ... ▾` on the top bar.
+2. Select **Customize Palette & Shadows...** to pick live canvas, surface, button, border, and text colors.
+3. Choose corner radius presets (0px, 4px, 8px, 14px, 20px) and button shadow depths (Flat, Subtle, Standard, Bold 3D, Deep Comic).
 4. Share custom themes by submitting a Pull Request to the public theme directory.
 
 ---
