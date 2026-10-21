@@ -17,7 +17,7 @@ type ServerConfig struct {
 }
 
 type ShellConfig struct {
-	MenuTitle       string `json:"menuTitle"`       // Default: "Rsync"
+	MenuTitle       string `json:"menuTitle"`       // Default: "rsyn_copy"
 	Position        string `json:"position"`        // "Default", "Top", "Bottom"
 	ShowIcons       bool   `json:"showIcons"`       // Default: true
 	CustomIconPath  string `json:"customIconPath"`  // Optional custom icon
@@ -80,7 +80,7 @@ func DefaultConfig() *AppConfig {
 		RsyncBinaryPath:  "rsync",
 		ShowHiddenFiles:  false,
 		Shell: ShellConfig{
-			MenuTitle:       "Rsync",
+			MenuTitle:       "rsyn_copy",
 			Position:        "Default",
 			ShowIcons:       true,
 			CustomIconPath:  "",

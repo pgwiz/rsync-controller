@@ -5,6 +5,10 @@ All notable changes to the Rsync Controller utility are documented in this file.
 ## (3.0.0) - Rsync-Win Dual Engine, Background Menu Separation, Theme Customizer & Shadow Controls
 
 ### Added
+- **rsyn_copy Shell & Application Branding**:
+  - Renamed the Windows Explorer cascading menu verb from generic `Rsync` to `rsyn_copy`.
+  - Submenu item updated to `&Open rsyn_copy...`.
+  - Window title styled as `rsyn_copy Controller`.
 - **Rsync-Win Dual Engine Support**:
   - Automatically detects whether the installed `rsync` binary is GNU rsync or Rust-based `rsync-win` (via cached `rsync --version` inspection).
   - Handles `rsync-win` specific CLI flags: `-a -v --progress --src <src> --dest <dest>` with forward slashes (`filepath.ToSlash`).

@@ -8,7 +8,8 @@ Rsync Controller is an ultra-fast, single-instance file synchronization orchestr
 2. **Zero Square Bracket Policy in UI**: Per user requirement, all UI buttons, tabs, status messages, operation banners, console logs, service daemons, offline queue statuses, and row types must strictly avoid square brackets (e.g., `READY`, `File`, `Folder`, `Up`, `ACTIVE: LOCAL COPY: ...`, `EXECUTE RSYNC`, `SYNC RUN`, `OK:`, `FAIL:`, `INFO:`, `WARN:`, `QUEUED`, `FAILED`).
 3. **Markdown File Restriction**: Restrict project documentation strictly to `README.md`, `changelog.md`, `memory.md`, and `agent.md`.
 4. **Explorer Submenu Protocol**: Windows Explorer cascaded flyout submenus use separate, isolated item and background pools to guarantee clean menus and prevent HKCR merging of stale HKLM verbs:
-   - Item Menu Pool: `Directory\ContextMenus\RsyncItem\shell` (`01_copy`, `02_move_to`, `03_pull`, `04_move_from`, `05_srv_alpha_push`, `06_srv_alpha_pull`, `99_open_ui`). Trigger verbs point to `ExtendedSubCommandsKey = "Directory\ContextMenus\RsyncItem"` with `--src="%1 "` or `--dest="%1 "`.
+   - Cascaded parent verb `MUIVerb` is named `rsyn_copy`.
+   - Item Menu Pool: `Directory\ContextMenus\RsyncItem\shell` (`01_copy`, `02_move_to`, `03_pull`, `04_move_from`, `05_srv_alpha_push`, `06_srv_alpha_pull`, `99_open_ui`). Trigger verbs point to `ExtendedSubCommandsKey = "Directory\ContextMenus\RsyncItem"` with `--src="%1 "` or `--dest="%1 "`. Item 99 is labeled `&Open rsyn_copy...`.
    - Background Menu Pool: `Directory\ContextMenus\RsyncBg\shell`. Trigger verbs point to `ExtendedSubCommandsKey = "Directory\ContextMenus\RsyncBg"` with `--bg="%V "` (strictly zero `%1` references).
    - Trailing space padding (`"%V "`, `"%1 "`) prevents Windows Explorer from corrupting trailing backslashes with escaped quotes.
    - Crucial: `(Default)` and `SubCommands` value entries MUST NOT exist on the parent verb.

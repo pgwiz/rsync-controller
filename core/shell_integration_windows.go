@@ -108,7 +108,7 @@ func RegisterShellMenus(exePath string, cfg *AppConfig) error {
 
 		menuTitle := cfg.Shell.MenuTitle
 		if menuTitle == "" {
-			menuTitle = "Rsync"
+			menuTitle = "rsyn_copy"
 		}
 
 		// 4. Register item parent trigger verbs pointing to RsyncItem pool
@@ -253,9 +253,9 @@ func registerSubmenuPoolItems(poolKey registry.Key, exePath, iconTarget string, 
 	}
 
 	// Open Controller
-	openLabel := "Open Rsync Controller..."
+	openLabel := "Open rsyn_copy..."
 	if accel {
-		openLabel = "&Open Rsync Controller..."
+		openLabel = "&Open rsyn_copy..."
 	}
 	addPoolItem(poolKey, "99_open_ui", openLabel, cmdOpen, iconTarget, seps)
 }

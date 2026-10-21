@@ -7,7 +7,7 @@
   "rsyncBinaryPath": "rsync",
   "showHiddenFiles": false,
   "shell": {
-    "menuTitle": "Rsync",
+    "menuTitle": "rsyn_copy",
     "position": "Default",
     "showIcons": true,
     "customIconPath": "E:\\Backup\\pgwiz\\rsync\\assets\\icon.ico",

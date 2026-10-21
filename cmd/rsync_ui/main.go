@@ -547,7 +547,7 @@ func runNativeWin32App() {
 
 	hInstance := w32.GetModuleHandle("")
 	className, _ := windows.UTF16PtrFromString("RsyncControllerWin32Class")
-	windowTitle, _ := windows.UTF16PtrFromString("Rsync Controller")
+	windowTitle, _ := windows.UTF16PtrFromString("rsyn_copy Controller")
 
 	baseDir, _ := os.Getwd()
 	iconPath := filepath.Join(baseDir, "assets", "icon.ico")

@@ -55,7 +55,7 @@ func main() {
 		}
 	}
 
-	fmt.Printf("%s Rsync Controller - Master Setup & Launcher\n", tagInfo)
+	fmt.Printf("%s rsyn_copy - Master Setup & Launcher\n", tagInfo)
 	fmt.Printf("%s Base directory: %s\n", tagInfo, baseDir)
 
 	// Check elevation
@@ -131,7 +131,7 @@ func main() {
 	}
 
 	// 5. Launch UI Window
-	fmt.Printf("%s Launching Rsync Controller UI...\n", tagReady)
+	fmt.Printf("%s Launching rsyn_copy UI...\n", tagReady)
 	time.Sleep(100 * time.Millisecond)
 
 	uiCmd := exec.Command(uiExe, passthroughArgs...)
