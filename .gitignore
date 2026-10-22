@@ -26,3 +26,17 @@ $RECYCLE.BIN/
 .vscode/
 *.swp
 *~
+
+# dev_md_guides local environment catalog (deploy sample only)
+dev_md_guides/directory.md
+!dev_md_guides/directory.md.sample
+
+# dev_md_guides local credentials (deploy sample only)
+dev_md_guides/credentials.md
+!dev_md_guides/credentials.md.sample
+
+# Local private guide overrides and sensitive documentation (never commit)
+/local.*.md
+/*.local.md
+dev_md_guides/local.*.md
+dev_md_guides/*.local.md
