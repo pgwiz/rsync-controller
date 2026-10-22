@@ -80,3 +80,21 @@ _Maintained in-place by the dev-md-compactor Conversational Reflection Protocol.
      - Write warning to Transfer Log and cleanly abort transfer execution.
 - **Why It Works (Mechanics)**: Guides the user's attention directly to the input field requiring action without interrupting the interface flow.
 - **Verification Evidence**: Verified live in UI with both empty and identical Source/Destination paths.
+
+---
+
+### SOL-005: Win32 Multi-Theme Owner-Drawn Button Bevels & Dynamic Drop Shadows
+- **Status**: `Verified`
+- **Target Context**: Native Win32 GDI Graphics Rendering
+- **Problem & Goal**: Render authentic retro 3D bevels (Windows 95), tactile button displacement on press, Y2K pill curves, and customizable drop shadows without third-party graphics frameworks.
+- **Evolution Ledger**:
+  1. *Baseline*: Standard `BS_PUSHBUTTON` styled via Windows visual styles.
+     - *Result*: Limited to current OS visual style, unable to achieve retro Windows 95 bevels, custom neon borders, or dynamic shadows.
+  2. *Refinements (Adding X)*: Switched to `BS_OWNERDRAW` and intercepted `WM_DRAWITEM` (`ODT_BUTTON`).
+     - *Result*: Custom colors rendered, but buttons felt static without click feedback.
+  3. *Latest Proven Truth (Adding X + Y)*:
+     - Rendered shadow offset rectangle by `theme.ShadowDepth` in `theme.ShadowColor` (or `BorderColor`).
+     - In unpressed state: render button face offset up and left from shadow.
+     - In pressed state (`ODS_SELECTED`): shift button body down and right by `shift := int32(sh)`, invert colors or draw dark inset bevels (`DrawEdge` with `EDGE_SUNKEN`), providing authentic tactile click feedback.
+- **Why It Works (Mechanics)**: Pure GDI double-buffered rectangle displacement creates a tangible 3D feel without external DLLs or frame drops.
+- **Verification Evidence**: Implemented and verified across all 18 themes in `cmd/rsync_ui/theme_engine.go#drawOwnerButton`.

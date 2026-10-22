@@ -1,5 +1,5 @@
 # Codebase Architecture & Directory Dependency Graph
-_Last regenerated: 2026-10-22 12:57:52 UTC by dev-md-compactor_
+_Last regenerated: 2026-10-22 13:10:55 UTC by dev-md-compactor_
 
 ## Project Manifests & Build Tools
 - `go.mod`

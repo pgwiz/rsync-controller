@@ -41,8 +41,8 @@
 | File | Lines | Category | Status | Last Modified |
 |---|---|---|---|---|
 | `agent.md` | 57 | Master Index | Active | 2026-10-22 |
-| `branch.md` | 26 | Worktree State | Active | 2026-10-22 |
-| `changelog.md` | 45 | Operational Audit | Active | 2026-10-22 |
+| `branch.md` | 31 | Worktree State | Active | 2026-10-22 |
+| `changelog.md` | 61 | Operational Audit | Active | 2026-10-22 |
 | `credentials.md` | 17 | Secrets (Local) | Gitignored | 2026-10-22 |
 | `credentials.md.sample` | 18 | Secrets (Sample) | Committed | 2026-10-22 |
 | `directory.md` | 26 | Environment (Local) | Gitignored | 2026-10-22 |
@@ -52,6 +52,6 @@
 | `gotchas.md` | 79 | Failure Modes | Active | 2026-10-22 |
 | `memory.md` | 56 | Decisions & ADRs | Active | 2026-10-22 |
 | `playbook.md` | 79 | Operational Playbooks | Active | 2026-10-22 |
-| `solution.md` | 82 | Proven Solutions | Active | 2026-10-22 |
+| `solution.md` | 100 | Proven Solutions | Active | 2026-10-22 |
 | `structure.md` | 66 | Architecture | Active | 2026-10-22 |
 <!-- END AUTO-GENERATED INVENTORY -->
