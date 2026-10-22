@@ -161,19 +161,19 @@ func getAllSystemDrives() []DriveInfo {
 
 			label := ""
 			if volName != "" {
-				label = fmt.Sprintf("%s (%s:)", volName, letter)
+				label = fmt.Sprintf("%s: (%s)", letter, volName)
 			} else {
 				switch driveType {
 				case 2: // DRIVE_REMOVABLE
-					label = fmt.Sprintf("USB Drive (%s:)", letter)
+					label = fmt.Sprintf("%s: (USB Drive)", letter)
 				case 4: // DRIVE_REMOTE
-					label = fmt.Sprintf("Network Drive (%s:)", letter)
+					label = fmt.Sprintf("%s: (Network Drive)", letter)
 				case 5: // DRIVE_CDROM
-					label = fmt.Sprintf("CD/DVD Drive (%s:)", letter)
+					label = fmt.Sprintf("%s: (CD/DVD Drive)", letter)
 				case 6: // DRIVE_RAMDISK
-					label = fmt.Sprintf("RAM Disk (%s:)", letter)
+					label = fmt.Sprintf("%s: (RAM Disk)", letter)
 				default:
-					label = fmt.Sprintf("Local Disk (%s:)", letter)
+					label = fmt.Sprintf("%s: (Local Disk)", letter)
 				}
 			}
 
@@ -192,7 +192,7 @@ func getAllSystemDrives() []DriveInfo {
 				drives = append(drives, DriveInfo{
 					Letter: string(l),
 					Root:   d,
-					Label:  fmt.Sprintf("Drive %s:", string(l)),
+					Label:  fmt.Sprintf("%s: (Local Disk)", string(l)),
 				})
 			}
 		}

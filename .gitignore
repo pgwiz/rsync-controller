@@ -10,6 +10,9 @@
 # Temporary and log files
 *.log
 qc
+*.zip
+*.mp4
+*.mkv
 
 # OS-generated files
 Thumbs.db

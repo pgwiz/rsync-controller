@@ -36,7 +36,19 @@ Rsync Controller is an ultra-fast, single-instance file synchronization orchestr
    - Rsync atomic move support via `RsyncJob.IsMove` appending `--remove-source-files`.
    - Single-instance anti-recursion: Window-level `FindWindowW("RsyncControllerWin32Class")` detection combined with mutex checks ensures secondary instances unconditionally forward payloads, attach thread input (`AttachThreadInput`), bring the existing window to the foreground, and exit immediately (`os.Exit(0)`), completely eliminating duplicate window spawning during multi-file Explorer selections.
    - Tab 0 Mode Selector button (`MODE: ... ▾` - `ID_BTN_MODE = 139`) with live Win32 popup menu for instant mode switching.
-8. **Smart Background Context Menus & Drive Enumeration**:
+8. **Dual Address Bars, Swap Direction & Non-Blocking Validation**:
+   - **Tab 0 Row 1**: Source address bar (`hwndTxtTarget`), `GO`, `BROWSE...`, `JUMP ▾`, and Quick Search filter.
+   - **Tab 0 Row 2**: Destination address bar (`hwndTxtDest`, `ID_TXT_DEST = 124`), `BROWSE...` (`ID_BTN_BROWSE_DEST = 125`), `SWAP ⇄` (`ID_BTN_SWAP = 126`), and Operation Banner.
+   - **Swap Mechanics**: `SWAP ⇄` reverses Source and Destination, updates UI controls, and re-navigates `navigateTo` to the new source directory.
+   - **Destination Validation Guard (Zero Modal Popups)**:
+     - If Destination is empty or identical to Source during `runRsyncTransfer`, NO popup dialog is spawned.
+     - The Destination bar is highlighted and focused (`w32.SetFocus`, `EM_SETSEL`), a high-visibility alert is shown on the status bar, and a warning is logged to the Transfer Log.
+   - **Elimination of Destination Locking**:
+     - Never default or silently lock Destination to the application directory or stale paths.
+     - Staging a new copy or move resets `stagedDest = ""`.
+9. **Smart Background Context Menus & Drive Enumeration**:
+   - **In-App ListView Background Right-Click**:
+     - Right-clicking empty space in the file list presents a context menu for `Copy to...`, `Move to...`, `Pull from...`, `Move from...`, `Check All`, `Uncheck All`, `Refresh (F5)`, `Reveal in Explorer`, `Copy Path`, and `Swap ⇄`.
    - **Background right-click behavior (no file selected)**:
      - `Move to...`: Current folder is the **source directory** (`stagedPath`), with destination prompted.
      - `Copy to...`: Current folder is the **destination directory** (`stagedDest`), with button `CHOOSE SOURCE & COPY`.
@@ -49,6 +61,8 @@ Rsync Controller is an ultra-fast, single-instance file synchronization orchestr
      - Registered `Drive\Background\shell\Rsync` so drive roots (`C:\`, `E:\`, etc.) natively support background right-clicks.
    - **Comprehensive Drive Discovery**:
      - TreeView (`SysTreeView32`) dynamically populates all system drives (`C:\`, `D:\`, `E:\`, etc.) using Win32 `GetLogicalDrives`, `GetDriveTypeW`, and `GetVolumeInformationW`.
+     - Drive roots display authentic volume labels (`C: (Local Disk)`, `E: (Backup)`, etc.) with child subfolders expanding on click.
+     - Universal Search dropdown dynamically enumerates all mounted system drives.
      - `RESCAN` button (`ID_BTN_RESCAN`) refreshes both drive roots and folder structures.
 
 ## Component Architecture

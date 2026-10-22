@@ -475,6 +475,11 @@ func initTheme(themeID string, customRadius int, customShadow int) *ThemeStyle {
 			if c, ok := parseHexColor(ct.ButtonText); ok {
 				t.ButtonText = c
 			}
+			if ct.ShadowColor != "" {
+				if c, ok := parseHexColor(ct.ShadowColor); ok {
+					t.ShadowColor = c
+				}
+			}
 			if ct.CornerRadius >= 0 {
 				t.Radius = ct.CornerRadius
 			}

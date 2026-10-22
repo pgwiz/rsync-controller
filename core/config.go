@@ -36,6 +36,7 @@ type CustomThemeConfig struct {
 	AccentText   string `json:"accentText,omitempty"`   // Hex, e.g. "#ffffff"
 	BorderColor  string `json:"borderColor,omitempty"`  // Hex, e.g. "#0f172a"
 	TextColor    string `json:"textColor,omitempty"`    // Hex, e.g. "#000000"
+	ShadowColor  string `json:"shadowColor,omitempty"`  // Hex, e.g. "#000000"
 	CornerRadius int    `json:"cornerRadius,omitempty"` // 0, 4, 8, 14, 20
 	ShadowDepth  int    `json:"shadowDepth,omitempty"`  // 0, 1, 2, 4, 6
 }
@@ -64,6 +65,7 @@ func DefaultCustomTheme() *CustomThemeConfig {
 		AccentText:   "ffffff",
 		BorderColor:  "0f172a",
 		TextColor:    "000000",
+		ShadowColor:  "000000",
 		CornerRadius: 8,
 		ShadowDepth:  2,
 	}

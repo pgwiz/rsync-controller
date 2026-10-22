@@ -2,6 +2,45 @@
 
 All notable changes to the Rsync Controller utility are documented in this file.
 
+## (3.1.0) - Dual Source & Destination Bars, Swap Direction, ListView Background Menu & Dynamic Drives
+
+### Added
+- **Dedicated Dual Source & Destination Controls on Tab 0**:
+  - Direct, visible Destination address bar (`hwndTxtDest`, `ID_TXT_DEST = 124`) on Row 2 (Y: 40) directly beneath the Source address bar.
+  - Dedicated `BROWSE...` button (`ID_BTN_BROWSE_DEST = 125`) for instant folder selection.
+  - Interactive `SWAP ⇄` button (`ID_BTN_SWAP = 126`) to reverse Source and Destination paths with a single click, instantly navigating to the new source and refreshing directory listings.
+  - Dynamic cue banner: `Type or browse target destination folder...`.
+- **In-App ListView Background Context Menu**:
+  - Right-clicking empty space in the file list now displays a complete context menu with options:
+    - `Copy to... (Set active folder as Source)`
+    - `Move to... (Set active folder as Source for Move)`
+    - `Pull from... (Set active folder as Destination)`
+    - `Move from... (Set active folder as Destination for Move)`
+    - `Check All Items (Ctrl+A)` / `Uncheck All Items`
+    - `Refresh Active Folder (F5)`
+    - `Open Active Folder in Windows Explorer`
+    - `Copy Active Folder Path`
+    - `Swap Source & Destination (⇄)`
+- **Dynamic System Drive Detection in Universal Search**:
+  - Replaced hardcoded drive options with real-time enumeration via `getAllSystemDrives()`, ensuring all connected disks and partitions (C:, D:, E:, USB, optical, network) appear automatically in the dropdown.
+- **Custom Theme Shadow Color Picker**:
+  - Added `ShadowColor` property to `CustomThemeConfig` and interactive menu item `Button Shadow Color...` in the theme customizer.
+  - Full support for custom shadow tinting alongside depth (0px, 1px, 2px, 4px, 6px).
+- **Standardized Drive Root Labeling in TreeView**:
+  - Formatted drive root items by drive letter (`C: (Local Disk)`, `D: (ChromeOS)`, `E: (Data)`) for consistent sorting and visual alignment.
+
+### Fixed
+- **Eliminated Silent Destination Locking**:
+  - Fixed root cause where `stagedDest` retained stale paths from earlier operations or background right-clicks.
+  - Staging a new copy or move resets `stagedDest` to empty, and requires explicit user-specified destination.
+  - Removed all hardcoded fallback destination strings (`C:\Backup\Target` and working directory fallbacks).
+- **Non-Blocking Transfer Guard (Zero Modal Popups)**:
+  - If Destination is empty or identical to Source when clicking `EXECUTE RSYNC`, the app does NOT open a modal popup dialog. Instead, it highlights and focuses the Destination edit box, selects all text (`EM_SETSEL`), displays a high-visibility warning on the status bar, and logs the warning to the Transfer Log.
+- **Single-Instance Dead-Window Recovery**:
+  - `procFindWindowW` single-instance check now verifies named-pipe delivery before exiting. If payload delivery fails (due to a closed or unresponsive window), the process cleanly falls through and starts the UI rather than silently terminating.
+- **Explorer Shell Background Fallback**:
+  - Sanitized background parameter handling so empty or unexpanded `%V` parameters fall back cleanly to `os.Getwd()`.
+
 ## (3.0.0) - Rsync-Win Dual Engine, Background Menu Separation, Theme Customizer & Shadow Controls
 
 ### Added

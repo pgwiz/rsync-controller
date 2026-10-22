@@ -41,9 +41,13 @@ const (
 	ID_BTN_DRAWER_TOGGLE    = 109
 	ID_BTN_JUMP             = 110
 
-	// Operation Banner
+	// Operation Banner & Destination Bar
 	ID_LBL_OP_BANNER        = 120
 	ID_BTN_OP_ACTION        = 121
+	ID_LBL_DEST             = 123
+	ID_TXT_DEST             = 124
+	ID_BTN_BROWSE_DEST      = 125
+	ID_BTN_SWAP             = 126
 
 	// Tabs
 	ID_TAB_CONTROL          = 122
@@ -169,6 +173,12 @@ var (
 	hwndBtnRescan        w32.HWND
 	hwndBtnSettings      w32.HWND
 	hwndBtnDrawerToggle  w32.HWND
+
+	// Destination Bar
+	hwndLblDest          w32.HWND
+	hwndTxtDest          w32.HWND
+	hwndBtnBrowseDest    w32.HWND
+	hwndBtnSwap          w32.HWND
 
 	// Operation Banner
 	hwndLblOpBanner      w32.HWND
@@ -412,6 +422,11 @@ func main() {
 	}
 
 	isItemClick := (rawSrc != "" || rawDest != "")
+	if !isItemClick && bgPath == "" {
+		if wd, err := os.Getwd(); err == nil && wd != "" {
+			bgPath = wd
+		}
+	}
 	isBackgroundClick := (!isItemClick && bgPath != "")
 
 	var autoStage bool
@@ -439,6 +454,8 @@ func main() {
 			if rawDest != "" {
 				stagedDest = rawDest
 				targetItemToSelect = rawDest
+			} else {
+				stagedDest = ""
 			}
 		}
 	} else if isBackgroundClick {
@@ -472,7 +489,11 @@ func main() {
 	initialPathsToStage = pathsToStage
 
 	if stagedPath == "" {
-		stagedPath = `E:\Backup\pgwiz\rsync`
+		if wd, err := os.Getwd(); err == nil && wd != "" {
+			stagedPath = wd
+		} else {
+			stagedPath = `C:\`
+		}
 	}
 	stagedPath = filepath.Clean(stagedPath)
 
@@ -490,9 +511,10 @@ func main() {
 			Paths:     pathsToStage,
 			AutoStage: autoStage,
 		}
-		_ = core.ForwardPayloadDirect(payload)
-		bringWindowToForeground(w32.HWND(existingHwnd))
-		os.Exit(0)
+		if err := core.ForwardPayloadDirect(payload); err == nil {
+			bringWindowToForeground(w32.HWND(existingHwnd))
+			os.Exit(0)
+		}
 	}
 
 	coordinator, err := core.CheckSingleInstance()
@@ -832,6 +854,15 @@ func editSubclassProc(hwnd w32.HWND, msg uint32, wParam, lParam uintptr) uintptr
 				navigateTo(path, true)
 			}
 			return 0
+		case hwndTxtDest:
+			dest := strings.TrimSpace(getWindowText(hwndTxtDest))
+			if dest != "" {
+				stagedDest = filepath.Clean(dest)
+			} else {
+				stagedDest = ""
+			}
+			updateOperationBanner()
+			return 0
 		case hwndTxtTopUnivSearch:
 			runTopUniversalSearch()
 			return 0
@@ -926,12 +957,23 @@ func onCreate(hwnd w32.HWND) {
 	hwndBtnDrawerToggle = createButton("HIDE DRAWER", w32.WS_VISIBLE|w32.WS_CHILD, 1035, 10, 80, 26, hwnd, ID_BTN_DRAWER_TOGGLE, hInstance)
 	setControlFont(hwndBtnDrawerToggle, currentTheme.FontBold)
 
-	// ==================== OPERATION BANNER (Y: 40) ====================
-	hwndLblOpBanner = createControl("STATIC", "MODE: LOCAL FILE MANAGER - Ready for file staging and sync.", w32.WS_VISIBLE|w32.WS_CHILD, 12, 42, 850, 20, hwnd, ID_LBL_OP_BANNER, hInstance)
-	setControlFont(hwndLblOpBanner, currentTheme.FontBold)
+	// ==================== ROW 2: DESTINATION BAR & OPERATION BANNER (Y: 40) ====================
+	hwndLblDest = createControl("STATIC", "DEST:", w32.WS_VISIBLE|w32.WS_CHILD, 12, 42, 45, 20, hwnd, ID_LBL_DEST, hInstance)
+	setControlFont(hwndLblDest, currentTheme.FontBold)
 
-	hwndBtnOpAction = createButton("SELECT DEST", w32.WS_VISIBLE|w32.WS_CHILD, 870, 39, 160, 26, hwnd, ID_BTN_OP_ACTION, hInstance)
-	setControlFont(hwndBtnOpAction, currentTheme.FontBold)
+	hwndTxtDest = createControl("EDIT", stagedDest, w32.WS_VISIBLE|w32.WS_CHILD|w32.WS_BORDER|w32.ES_AUTOHSCROLL, 60, 40, 360, 24, hwnd, ID_TXT_DEST, hInstance)
+	setControlFont(hwndTxtDest, currentTheme.FontNormal)
+	setEditCueBanner(hwndTxtDest, "Type or browse target destination folder...")
+	subclassEdit(hwndTxtDest)
+
+	hwndBtnBrowseDest = createButton("BROWSE...", w32.WS_VISIBLE|w32.WS_CHILD, 425, 39, 85, 26, hwnd, ID_BTN_BROWSE_DEST, hInstance)
+	setControlFont(hwndBtnBrowseDest, currentTheme.FontBold)
+
+	hwndBtnSwap = createButton("SWAP ⇄", w32.WS_VISIBLE|w32.WS_CHILD, 515, 39, 75, 26, hwnd, ID_BTN_SWAP, hInstance)
+	setControlFont(hwndBtnSwap, currentTheme.FontBold)
+
+	hwndLblOpBanner = createControl("STATIC", "MODE: LOCAL FILE MANAGER - Ready for file staging and sync.", w32.WS_VISIBLE|w32.WS_CHILD, 600, 42, 450, 20, hwnd, ID_LBL_OP_BANNER, hInstance)
+	setControlFont(hwndLblOpBanner, currentTheme.FontBold)
 
 	// ==================== TABS (Y: 68) ====================
 	hwndTabControl = createControl("SysTabControl32", "", w32.WS_VISIBLE|w32.WS_CHILD|w32.WS_CLIPSIBLINGS|TCS_OWNERDRAWFIXED, 12, 68, 1050, 30, hwnd, ID_TAB_CONTROL, hInstance)
@@ -967,6 +1009,7 @@ func onCreate(hwnd w32.HWND) {
 
 	hwndTreeView = createControl(WC_TREEVIEW, "", w32.WS_VISIBLE|w32.WS_CHILD|w32.WS_BORDER|TVS_HASBUTTONS|TVS_HASLINES|TVS_LINESATROOT|TVS_SHOWSELALWAYS, 12, 134, 210, 420, hwnd, ID_TREEVIEW, hInstance)
 	setControlFont(hwndTreeView, currentTheme.FontNormal)
+	applyThemeToTreeView(hwndTreeView, currentTheme)
 	populateTreeRoots(hwndTreeView)
 
 	hwndListView = createControl("SysListView32", "", w32.WS_VISIBLE|w32.WS_CHILD|w32.WS_BORDER|0x0001|0x0008|w32.WS_VSCROLL, 228, 134, 534, 420, hwnd, ID_LISTVIEW, hInstance)
@@ -1005,8 +1048,9 @@ func onCreate(hwnd w32.HWND) {
 
 	hwndCmbUnivDrive = createControl("COMBOBOX", "", w32.WS_CHILD|w32.CBS_DROPDOWNLIST|w32.WS_VSCROLL, 602, 102, 130, 100, hwnd, ID_CMB_UNIV_DRIVE, hInstance)
 	setControlFont(hwndCmbUnivDrive, currentTheme.FontNormal)
-	addComboItem(hwndCmbUnivDrive, "Entire C: Drive")
-	addComboItem(hwndCmbUnivDrive, "Entire E: Drive")
+	for _, drv := range getAllSystemDrives() {
+		addComboItem(hwndCmbUnivDrive, fmt.Sprintf("Entire %s: Drive", drv.Letter))
+	}
 	addComboItem(hwndCmbUnivDrive, "Current Target")
 	w32.SendMessage(hwndCmbUnivDrive, 0x014E, 0, 0)
 
@@ -1316,10 +1360,24 @@ func onResize(width, height int) {
 	drawerToggleX := optX + 75 + 4
 	w32.MoveWindow(hwndBtnDrawerToggle, drawerToggleX, 10, 75, 26, true)
 
-	// Operation Banner (Y: 40, H: 24)
-	bannerActionW := 160
-	w32.MoveWindow(hwndLblOpBanner, 12, 42, width-24-bannerActionW-8, 20, true)
-	w32.MoveWindow(hwndBtnOpAction, width-12-bannerActionW, 39, bannerActionW, 26, true)
+	// Row 2: Destination Bar & Operation Banner (Y: 40, H: 26)
+	w32.MoveWindow(hwndLblDest, 12, 42, 45, 20, true)
+	destW := addrW + 85
+	if destW < 220 {
+		destW = 220
+	}
+	w32.MoveWindow(hwndTxtDest, 60, 40, destW, 24, true)
+	browseDestX := 60 + destW + 4
+	w32.MoveWindow(hwndBtnBrowseDest, browseDestX, 39, 80, 26, true)
+	swapX := browseDestX + 80 + 4
+	w32.MoveWindow(hwndBtnSwap, swapX, 39, 65, 26, true)
+
+	bannerX := swapX + 65 + 10
+	bannerW := width - 12 - bannerX
+	if bannerW < 120 {
+		bannerW = 120
+	}
+	w32.MoveWindow(hwndLblOpBanner, bannerX, 42, bannerW, 20, true)
 
 	// Tab Control (Y: 68, H: 28)
 	w32.MoveWindow(hwndTabControl, 12, 68, width-24, 28, true)
@@ -1506,6 +1564,33 @@ func onCommand(hwnd w32.HWND, controlID, code int) {
 
 	case ID_BTN_OP_ACTION:
 		handleOperationBannerAction()
+
+	case ID_BTN_BROWSE_DEST:
+		curDest := strings.TrimSpace(getWindowText(hwndTxtDest))
+		if curDest == "" {
+			curDest = stagedPath
+		}
+		if path, ok := BrowseFolderDialog(hwnd, "Select Target Destination Folder"); ok && strings.TrimSpace(path) != "" {
+			stagedDest = filepath.Clean(path)
+			setWindowText(hwndTxtDest, stagedDest)
+			updateOperationBanner()
+			setStatusBarText(hwndStatusBar, 4, "DESTINATION UPDATED")
+		}
+
+	case ID_BTN_SWAP:
+		curSrc := stagedPath
+		curDest := strings.TrimSpace(getWindowText(hwndTxtDest))
+		if curDest == "" {
+			setStatusBarText(hwndStatusBar, 4, "WARN: DESTINATION IS EMPTY - CANNOT SWAP")
+			return
+		}
+		stagedPath = filepath.Clean(curDest)
+		stagedDest = filepath.Clean(curSrc)
+		setWindowText(hwndTxtTarget, stagedPath)
+		setWindowText(hwndTxtDest, stagedDest)
+		navigateTo(stagedPath, true)
+		updateOperationBanner()
+		setStatusBarText(hwndStatusBar, 4, "SWAPPED SOURCE AND DESTINATION")
 
 	case ID_BTN_SAVESETTINGS:
 		saveSettingsFromUI()
@@ -1719,184 +1804,60 @@ func executeContextAction() {
 			w32.SendMessage(hwndTabControl, TCM_SETCURSEL, 2, 0)
 			onTabChanged()
 			selectServerInCombo(stagedServer)
-
-			srvName := stagedServer
-			for _, s := range appCfg.Servers {
-				if strings.EqualFold(s.ID, stagedServer) || strings.EqualFold(s.Name, stagedServer) {
-					srvName = s.Name
-					break
-				}
-			}
-
-			count := len(stagedRegistry)
-			if count == 0 && stagedPath != "" {
-				count = 1
-			}
-
-			msg := fmt.Sprintf("Ready to push %d staged item(s) to remote server %s?\n\nExecute Rsync transfer now?", count, srvName)
-			ans := w32.MessageBox(hwndMain, msg, "Confirm Remote Rsync Push", w32.MB_YESNO|w32.MB_ICONQUESTION)
-			if ans == w32.IDYES {
-				runRsyncTransfer(false)
+			setStatusBarText(hwndStatusBar, 4, "READY TO PUSH TO SERVER - REVIEW AND CLICK PUSH TO SERVER")
+			return
+		}
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+			if stagedDest == "" {
+				w32.SetFocus(hwndTxtDest)
+				setStatusBarText(hwndStatusBar, 4, "READY - ENTER OR BROWSE DESTINATION FOLDER")
 			} else {
-				setStatusBarText(hwndStatusBar, 4, "PUSH STAGED - CLICK EXECUTE WHEN READY")
-			}
-			return
-		}
-
-		if stagedDest != "" && len(stagedRegistry) == 0 {
-			src, ok := BrowseFolderDialog(hwndMain, "Select Source Folder to Copy From")
-			if !ok || strings.TrimSpace(src) == "" {
-				setStatusBarText(hwndStatusBar, 4, "COPY CANCELLED")
-				return
-			}
-			stagedPath = filepath.Clean(src)
-			updateOperationBanner()
-
-			msg := fmt.Sprintf("Ready to copy files from:\n%s\n\nInto destination folder:\n%s\n\nExecute Rsync copy now?", stagedPath, stagedDest)
-			ans := w32.MessageBox(hwndMain, msg, "Confirm Rsync Copy", w32.MB_YESNO|w32.MB_ICONQUESTION)
-			if ans == w32.IDYES {
-				runRsyncTransfer(false)
-			} else {
-				setStatusBarText(hwndStatusBar, 4, "COPY PRIMED - CLICK EXECUTE WHEN READY")
-			}
-			return
-		}
-
-		count := len(stagedRegistry)
-		if count == 0 && stagedPath != "" {
-			fi, err := os.Stat(stagedPath)
-			if err == nil {
-				addToStaged(DisplayItem{
-					Name:     filepath.Base(stagedPath),
-					FullPath: stagedPath,
-					Size:     fi.Size(),
-					IsDir:    fi.IsDir(),
-				})
-				count = len(stagedRegistry)
+				setStatusBarText(hwndStatusBar, 4, "READY - REVIEW DESTINATION AND CLICK EXECUTE RSYNC")
 			}
 		}
-
-		if stagedDest == "" {
-			dest, ok := BrowseFolderDialog(hwndMain, "Select Destination Folder for Rsync Copy")
-			if !ok || strings.TrimSpace(dest) == "" {
-				setStatusBarText(hwndStatusBar, 4, "COPY CANCELLED - ITEMS REMAIN STAGED")
-				return
-			}
-			stagedDest = filepath.Clean(dest)
-			updateOperationBanner()
-		}
-
-		msg := fmt.Sprintf("Ready to copy %d staged item(s) to:\n%s\n\nExecute Rsync transfer now?", count, stagedDest)
-		ans := w32.MessageBox(hwndMain, msg, "Confirm Rsync Copy", w32.MB_YESNO|w32.MB_ICONQUESTION)
-		if ans == w32.IDYES {
-			runRsyncTransfer(false)
-		} else {
-			setStatusBarText(hwndStatusBar, 4, "COPY PRIMED - CLICK EXECUTE WHEN READY")
-		}
-
-	case "move_to":
-		if stagedDest == "" {
-			dest, ok := BrowseFolderDialog(hwndMain, "Select Destination Folder for Rsync Move")
-			if !ok || strings.TrimSpace(dest) == "" {
-				setStatusBarText(hwndStatusBar, 4, "MOVE CANCELLED - ITEMS REMAIN STAGED")
-				return
-			}
-			stagedDest = filepath.Clean(dest)
-			updateOperationBanner()
-		}
-
-		sourceDesc := fmt.Sprintf("%d staged item(s)", len(stagedRegistry))
-		if len(stagedRegistry) == 0 {
-			sourceDesc = fmt.Sprintf("all files in:\n%s", stagedPath)
-		}
-
-		msg := fmt.Sprintf("Ready to MOVE %s to:\n%s\n\nSource items will be removed upon successful transfer (--remove-source-files).\n\nExecute Rsync move now?", sourceDesc, stagedDest)
-		ans := w32.MessageBox(hwndMain, msg, "Confirm Rsync Move", w32.MB_YESNO|w32.MB_ICONWARNING)
-		if ans == w32.IDYES {
-			runRsyncTransfer(false)
-		} else {
-			setStatusBarText(hwndStatusBar, 4, "MOVE PRIMED - CLICK EXECUTE WHEN READY")
-		}
-
-	case "move_from":
-		src, ok := BrowseFolderDialog(hwndMain, "Select Source Folder to Move From")
-		if !ok || strings.TrimSpace(src) == "" {
-			setStatusBarText(hwndStatusBar, 4, "MOVE CANCELLED")
-			return
-		}
-		stagedPath = filepath.Clean(src)
 		updateOperationBanner()
 
-		destFolder := stagedDest
-		if destFolder == "" {
-			destFolder = stagedPath
+	case "move_to":
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+			if stagedDest == "" {
+				w32.SetFocus(hwndTxtDest)
+				setStatusBarText(hwndStatusBar, 4, "READY - ENTER OR BROWSE DESTINATION FOLDER FOR MOVE")
+			} else {
+				setStatusBarText(hwndStatusBar, 4, "READY - REVIEW DESTINATION AND CLICK EXECUTE RSYNC")
+			}
 		}
+		updateOperationBanner()
 
-		msg := fmt.Sprintf("Ready to MOVE files from:\n%s\n\nInto destination folder:\n%s\n\nSource items will be removed upon successful transfer (--remove-source-files).\n\nExecute Rsync move now?", stagedPath, destFolder)
-		ans := w32.MessageBox(hwndMain, msg, "Confirm Rsync Move", w32.MB_YESNO|w32.MB_ICONWARNING)
-		if ans == w32.IDYES {
-			runRsyncTransfer(false)
-		} else {
-			setStatusBarText(hwndStatusBar, 4, "MOVE PRIMED - CLICK EXECUTE WHEN READY")
-		}
-
-	case "pull":
+	case "move_from", "pull":
 		if stagedServer != "" {
 			w32.SendMessage(hwndTabControl, TCM_SETCURSEL, 2, 0)
 			onTabChanged()
 			selectServerInCombo(stagedServer)
-
-			srvName := stagedServer
-			for _, s := range appCfg.Servers {
-				if strings.EqualFold(s.ID, stagedServer) || strings.EqualFold(s.Name, stagedServer) {
-					srvName = s.Name
-					break
-				}
-			}
-
-			destFolder := stagedDest
-			if destFolder == "" {
-				destFolder = stagedPath
-			}
-
-			msg := fmt.Sprintf("Ready to pull from remote server %s\nInto destination directory:\n%s\n\nExecute Rsync transfer now?", srvName, destFolder)
-			ans := w32.MessageBox(hwndMain, msg, "Confirm Remote Rsync Pull", w32.MB_YESNO|w32.MB_ICONQUESTION)
-			if ans == w32.IDYES {
-				runRsyncTransfer(false)
-			} else {
-				setStatusBarText(hwndStatusBar, 4, "PULL PRIMED - CLICK EXECUTE WHEN READY")
-			}
+			setStatusBarText(hwndStatusBar, 4, "READY TO PULL FROM SERVER - CLICK PULL FROM SERVER")
 			return
 		}
-
-		src, ok := BrowseFolderDialog(hwndMain, "Select Source Folder to Pull From")
-		if !ok || strings.TrimSpace(src) == "" {
-			setStatusBarText(hwndStatusBar, 4, "PULL CANCELLED")
-			return
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
 		}
-		stagedPath = filepath.Clean(src)
 		updateOperationBanner()
-
-		destFolder := stagedDest
-		if destFolder == "" {
-			destFolder = stagedPath
-		}
-
-		msg := fmt.Sprintf("Ready to pull files from:\n%s\n\nInto destination folder:\n%s\n\nExecute Rsync pull now?", stagedPath, destFolder)
-		ans := w32.MessageBox(hwndMain, msg, "Confirm Rsync Pull", w32.MB_YESNO|w32.MB_ICONQUESTION)
-		if ans == w32.IDYES {
-			runRsyncTransfer(false)
-		} else {
-			setStatusBarText(hwndStatusBar, 4, "PULL PRIMED - CLICK EXECUTE WHEN READY")
-		}
+		setStatusBarText(hwndStatusBar, 4, "READY - ACTIVE FOLDER IS DESTINATION | SELECT SOURCE ITEMS")
 
 	default:
-		runRsyncTransfer(false)
+		updateOperationBanner()
 	}
 }
 
 func handleOperationBannerAction() {
-	executeContextAction()
+	if hwndTxtDest != 0 {
+		dest := strings.TrimSpace(getWindowText(hwndTxtDest))
+		if dest == "" {
+			onCommand(hwndMain, ID_BTN_BROWSE_DEST, 0)
+			return
+		}
+	}
+	runRsyncTransfer(false)
 }
 
 func copyRsyncCliCommandToClipboard() {
@@ -1908,9 +1869,15 @@ func copyRsyncCliCommandToClipboard() {
 	} else {
 		selectedPaths = []string{stagedPath}
 	}
-	dest := stagedDest
+	dest := ""
+	if hwndTxtDest != 0 {
+		dest = strings.TrimSpace(getWindowText(hwndTxtDest))
+	}
 	if dest == "" {
-		dest = `C:\Backup\Target`
+		dest = stagedDest
+	}
+	if dest == "" {
+		dest = "TARGET_DESTINATION"
 	}
 
 	isWin := core.IsRsyncWin(appCfg.RsyncBinaryPath)
@@ -2503,6 +2470,15 @@ func handleLaunchPayload(p core.LaunchPayload) {
 	}
 	if p.Dest != "" {
 		stagedDest = cleanArgParam(p.Dest)
+	} else if p.Mode == "copy" || p.Mode == "move_to" || p.Mode == "open" {
+		stagedDest = ""
+	}
+
+	if hwndTxtDest != 0 {
+		setWindowText(hwndTxtDest, stagedDest)
+	}
+	if hwndTxtTarget != 0 && stagedPath != "" {
+		setWindowText(hwndTxtTarget, stagedPath)
 	}
 
 	// Auto-stage provided paths or src
@@ -2634,18 +2610,26 @@ func updateOperationBanner() {
 		return
 	}
 
+	currentDestText := ""
+	if hwndTxtDest != 0 {
+		currentDestText = strings.TrimSpace(getWindowText(hwndTxtDest))
+	}
+	if currentDestText == "" {
+		currentDestText = stagedDest
+	}
+
 	switch strings.ToLower(stagedMode) {
 	case "copy":
 		if stagedServer != "" {
 			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: SERVER PUSH -> %s: %d item(s) staged. Click PUSH TO SERVER or review below.", strings.ToUpper(stagedServer), len(stagedRegistry)))
 			setWindowText(hwndBtnOpAction, "PUSH TO SERVER")
-		} else if stagedDest != "" && len(stagedRegistry) == 0 {
-			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL COPY: Dest locked: %s | Select source folder or files to copy.", stagedDest))
+		} else if currentDestText != "" && len(stagedRegistry) == 0 {
+			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL COPY: Destination: %s | Select source folder or files to copy.", currentDestText))
 			setWindowText(hwndBtnOpAction, "CHOOSE SOURCE & COPY")
 		} else {
-			destDisplay := stagedDest
+			destDisplay := currentDestText
 			if destDisplay == "" {
-				destDisplay = "(Not chosen - click Choose Dest)"
+				destDisplay = "(None - enter destination below)"
 				setWindowText(hwndBtnOpAction, "CHOOSE DEST & COPY")
 			} else {
 				setWindowText(hwndBtnOpAction, "START RSYNC COPY")
@@ -2654,9 +2638,9 @@ func updateOperationBanner() {
 		}
 
 	case "move_to":
-		destDisplay := stagedDest
+		destDisplay := currentDestText
 		if destDisplay == "" {
-			destDisplay = "(Not chosen - click Choose Dest)"
+			destDisplay = "(None - enter destination below)"
 			setWindowText(hwndBtnOpAction, "CHOOSE DEST & MOVE")
 		} else {
 			setWindowText(hwndBtnOpAction, "START RSYNC MOVE")
@@ -2669,23 +2653,23 @@ func updateOperationBanner() {
 
 	case "pull":
 		if stagedServer != "" {
-			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: SERVER PULL -> %s: Destination locked: %s. Click PULL FROM SERVER.", strings.ToUpper(stagedServer), stagedDest))
+			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: SERVER PULL -> %s: Destination: %s. Click PULL FROM SERVER.", strings.ToUpper(stagedServer), stagedDest))
 			setWindowText(hwndBtnOpAction, "PULL FROM SERVER")
 		} else {
-			destDisplay := stagedDest
+			destDisplay := currentDestText
 			if destDisplay == "" {
 				destDisplay = stagedPath
 			}
-			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL PULL: Dest locked: %s | Select source directory and sync.", destDisplay))
+			setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL PULL: Destination: %s | Select source directory and sync.", destDisplay))
 			setWindowText(hwndBtnOpAction, "CHOOSE SOURCE & PULL")
 		}
 
 	case "move_from":
-		destDisplay := stagedDest
+		destDisplay := currentDestText
 		if destDisplay == "" {
 			destDisplay = stagedPath
 		}
-		setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL MOVE FROM: Dest locked: %s | Select source directory to move (Source deleted on completion).", destDisplay))
+		setWindowText(hwndLblOpBanner, fmt.Sprintf("ACTIVE: LOCAL MOVE FROM: Destination: %s | Select source directory to move (Source deleted on completion).", destDisplay))
 		setWindowText(hwndBtnOpAction, "CHOOSE SOURCE & MOVE")
 
 	default:
@@ -2803,6 +2787,40 @@ func openSelectedUniversalFileDir() {
 }
 
 func runRsyncTransfer(dryRun bool) {
+	dest := ""
+	if hwndTxtDest != 0 {
+		dest = strings.TrimSpace(getWindowText(hwndTxtDest))
+	}
+	if dest == "" {
+		dest = strings.TrimSpace(stagedDest)
+	}
+
+	// For local transfers, validate destination
+	if stagedServer == "" {
+		if dest == "" || dest == "." {
+			if hwndTxtDest != 0 {
+				w32.SetFocus(hwndTxtDest)
+				w32.SendMessage(hwndTxtDest, 0x00B1 /* EM_SETSEL */, 0, ^uintptr(0))
+			}
+			setStatusBarText(hwndStatusBar, 4, "WARN: DESTINATION FOLDER REQUIRED - PLEASE SPECIFY TARGET PATH")
+			appendLog("\r\nWARN: Transfer aborted: Destination folder is not specified. Please enter or browse a destination path.\r\n")
+			return
+		}
+
+		cleanDest := filepath.Clean(dest)
+		cleanSrc := filepath.Clean(stagedPath)
+		if strings.EqualFold(cleanDest, cleanSrc) {
+			if hwndTxtDest != 0 {
+				w32.SetFocus(hwndTxtDest)
+				w32.SendMessage(hwndTxtDest, 0x00B1 /* EM_SETSEL */, 0, ^uintptr(0))
+			}
+			setStatusBarText(hwndStatusBar, 4, "WARN: SOURCE AND DESTINATION CANNOT BE THE SAME FOLDER")
+			appendLog(fmt.Sprintf("\r\nWARN: Transfer aborted: Destination (%s) is identical to Source folder.\r\n", cleanDest))
+			return
+		}
+		stagedDest = cleanDest
+	}
+
 	var selectedPaths []string
 	if len(stagedRegistry) > 0 {
 		for p := range stagedRegistry {
@@ -2843,9 +2861,6 @@ func runRsyncTransfer(dryRun bool) {
 	go func() {
 		ctx := context.Background()
 		dest := stagedDest
-		if dest == "" {
-			dest = `C:\Backup\Target`
-		}
 
 		var srv *core.ServerConfig
 		if stagedServer != "" {
@@ -3142,6 +3157,7 @@ func showThemeCustomizerMenu(hwndOwner w32.HWND, btnHwnd w32.HWND) {
 	appendMenuItem(104, fmt.Sprintf("Button Text Color... (#%s)", appCfg.CustomTheme.ButtonText))
 	appendMenuItem(105, fmt.Sprintf("Accent / Highlight Color... (#%s)", appCfg.CustomTheme.AccentColor))
 	appendMenuItem(106, fmt.Sprintf("Window Border Color... (#%s)", appCfg.CustomTheme.BorderColor))
+	appendMenuItem(108, fmt.Sprintf("Button Shadow Color... (#%s)", appCfg.CustomTheme.ShadowColor))
 	appendSeparator()
 
 	pShadowTitle, _ := windows.UTF16PtrFromString("Button Shadow Depth")
@@ -3205,6 +3221,12 @@ func showThemeCustomizerMenu(hwndOwner w32.HWND, btnHwnd w32.HWND) {
 		curVal, _ := parseHexColor(appCfg.CustomTheme.BorderColor)
 		if chosen, ok := chooseColorDialog(hwndOwner, curVal); ok {
 			appCfg.CustomTheme.BorderColor = colorToHex(chosen)
+			applyCustomThemeLive(hwndOwner)
+		}
+	case cmd == 108:
+		curVal, _ := parseHexColor(appCfg.CustomTheme.ShadowColor)
+		if chosen, ok := chooseColorDialog(hwndOwner, curVal); ok {
+			appCfg.CustomTheme.ShadowColor = colorToHex(chosen)
 			applyCustomThemeLive(hwndOwner)
 		}
 	case cmd >= 300 && cmd < 300+uintptr(len(shadowDepths)):
@@ -3345,6 +3367,7 @@ func showJumpMenu(btnHwnd w32.HWND) {
 func showListViewContextMenu(hwndLV w32.HWND) {
 	sel := int(w32.SendMessage(hwndLV, LVM_GETNEXTITEM, ^uintptr(0), uintptr(LVNI_SELECTED)))
 	if sel < 0 || sel >= len(currentListItems) {
+		showListViewBackgroundContextMenu()
 		return
 	}
 	item := currentListItems[sel]
@@ -3409,6 +3432,11 @@ func showListViewContextMenu(hwndLV w32.HWND) {
 		addToStaged(item)
 		syncCurrentListViewChecks()
 		stagedMode = "copy"
+		stagedDest = ""
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, "")
+			w32.SetFocus(hwndTxtDest)
+		}
 		updateModeButtonLabel()
 		updateOperationBanner()
 		executeContextAction()
@@ -3416,6 +3444,11 @@ func showListViewContextMenu(hwndLV w32.HWND) {
 		addToStaged(item)
 		syncCurrentListViewChecks()
 		stagedMode = "move_to"
+		stagedDest = ""
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, "")
+			w32.SetFocus(hwndTxtDest)
+		}
 		updateModeButtonLabel()
 		updateOperationBanner()
 		executeContextAction()
@@ -3425,6 +3458,9 @@ func showListViewContextMenu(hwndLV w32.HWND) {
 			stagedDest = filepath.Dir(item.FullPath)
 		}
 		stagedMode = "pull"
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+		}
 		updateModeButtonLabel()
 		updateOperationBanner()
 		executeContextAction()
@@ -3434,6 +3470,9 @@ func showListViewContextMenu(hwndLV w32.HWND) {
 			stagedDest = filepath.Dir(item.FullPath)
 		}
 		stagedMode = "move_from"
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+		}
 		updateModeButtonLabel()
 		updateOperationBanner()
 		executeContextAction()
@@ -3442,6 +3481,116 @@ func showListViewContextMenu(hwndLV w32.HWND) {
 	case 3003:
 		setClipboardText(hwndMain, item.FullPath)
 		setStatusBarText(hwndStatusBar, 4, "PATH COPIED TO CLIPBOARD")
+	}
+}
+
+func showListViewBackgroundContextMenu() {
+	hMenu := w32.CreatePopupMenu()
+	if hMenu == 0 {
+		return
+	}
+	defer w32.DestroyMenu(hMenu)
+
+	pCopyAction, _ := windows.UTF16PtrFromString("Copy to... (Set active folder as Source)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3051, uintptr(unsafe.Pointer(pCopyAction)))
+
+	pMoveAction, _ := windows.UTF16PtrFromString("Move to... (Set active folder as Source for Move)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3052, uintptr(unsafe.Pointer(pMoveAction)))
+
+	pPullAction, _ := windows.UTF16PtrFromString("Pull from... (Set active folder as Destination)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3053, uintptr(unsafe.Pointer(pPullAction)))
+
+	pMoveFromAction, _ := windows.UTF16PtrFromString("Move from... (Set active folder as Destination for Move)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3054, uintptr(unsafe.Pointer(pMoveFromAction)))
+
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_SEPARATOR), 0, 0)
+
+	pSelectAll, _ := windows.UTF16PtrFromString("Check All Items (Ctrl+A)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3055, uintptr(unsafe.Pointer(pSelectAll)))
+
+	pClearAll, _ := windows.UTF16PtrFromString("Uncheck All Items")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3056, uintptr(unsafe.Pointer(pClearAll)))
+
+	pRefresh, _ := windows.UTF16PtrFromString("Refresh Active Folder (F5)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3057, uintptr(unsafe.Pointer(pRefresh)))
+
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_SEPARATOR), 0, 0)
+
+	pExplorer, _ := windows.UTF16PtrFromString("Open Active Folder in Windows Explorer")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3058, uintptr(unsafe.Pointer(pExplorer)))
+
+	pCopyPath, _ := windows.UTF16PtrFromString("Copy Active Folder Path")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3059, uintptr(unsafe.Pointer(pCopyPath)))
+
+	pSwap, _ := windows.UTF16PtrFromString("Swap Source & Destination (⇄)")
+	_, _, _ = procAppendMenuW.Call(uintptr(hMenu), uintptr(w32.MF_STRING), 3060, uintptr(unsafe.Pointer(pSwap)))
+
+	ptX, ptY, _ := w32.GetCursorPos()
+
+	cmd, _, _ := procTrackPopupMenu.Call(
+		uintptr(hMenu),
+		uintptr(0x0100|0x0002),
+		uintptr(ptX),
+		uintptr(ptY),
+		0,
+		uintptr(hwndMain),
+		0,
+	)
+
+	switch cmd {
+	case 3051:
+		stagedMode = "copy"
+		stagedDest = ""
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, "")
+			w32.SetFocus(hwndTxtDest)
+		}
+		updateModeButtonLabel()
+		updateOperationBanner()
+		setStatusBarText(hwndStatusBar, 4, "READY - ACTIVE FOLDER IS SOURCE | ENTER DESTINATION BELOW")
+	case 3052:
+		stagedMode = "move_to"
+		stagedDest = ""
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, "")
+			w32.SetFocus(hwndTxtDest)
+		}
+		updateModeButtonLabel()
+		updateOperationBanner()
+		setStatusBarText(hwndStatusBar, 4, "READY - ACTIVE FOLDER IS SOURCE FOR MOVE | ENTER DESTINATION BELOW")
+	case 3053:
+		stagedMode = "pull"
+		stagedDest = stagedPath
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+			w32.SetFocus(hwndTxtTarget)
+		}
+		updateModeButtonLabel()
+		updateOperationBanner()
+		setStatusBarText(hwndStatusBar, 4, "READY - ACTIVE FOLDER IS DESTINATION | ENTER OR BROWSE SOURCE ABOVE")
+	case 3054:
+		stagedMode = "move_from"
+		stagedDest = stagedPath
+		if hwndTxtDest != 0 {
+			setWindowText(hwndTxtDest, stagedDest)
+			w32.SetFocus(hwndTxtTarget)
+		}
+		updateModeButtonLabel()
+		updateOperationBanner()
+		setStatusBarText(hwndStatusBar, 4, "READY - ACTIVE FOLDER IS DESTINATION FOR MOVE | ENTER OR BROWSE SOURCE ABOVE")
+	case 3055:
+		onCommand(hwndMain, ID_BTN_SELECTALL, 0)
+	case 3056:
+		onCommand(hwndMain, ID_BTN_CLEAR, 0)
+	case 3057:
+		triggerScanAsync(stagedPath)
+	case 3058:
+		revealInExplorer(stagedPath)
+	case 3059:
+		setClipboardText(hwndMain, stagedPath)
+		setStatusBarText(hwndStatusBar, 4, "FOLDER PATH COPIED TO CLIPBOARD")
+	case 3060:
+		onCommand(hwndMain, ID_BTN_SWAP, 0)
 	}
 }
 
@@ -3627,7 +3776,7 @@ func revealInExplorer(targetPath string) {
 }
 
 func isEditHwnd(h w32.HWND) bool {
-	if h == hwndTxtTarget || h == hwndTxtFilter || h == hwndTxtTopUnivSearch || h == hwndTxtUnivSearch || h == hwndTxtRemoteDest || h == hwndEditLog {
+	if h == hwndTxtTarget || h == hwndTxtDest || h == hwndTxtFilter || h == hwndTxtTopUnivSearch || h == hwndTxtUnivSearch || h == hwndTxtRemoteDest || h == hwndEditLog {
 		return true
 	}
 	var className [64]uint16
